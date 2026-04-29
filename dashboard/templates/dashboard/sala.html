@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sala de Diálisis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #0f4c81;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px 0;
+        }
+
+        .nav {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav a, .nav button, .pill {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .pill {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        .turnos {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .turnos a {
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: white;
+            color: #0f4c81;
+            font-weight: bold;
+        }
+
+        .turnos a.active {
+            background: #0f4c81;
+            color: white;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            border-top: 6px solid #d1d5db;
+        }
+
+        .card.ocupado {
+            border-top-color: #0f4c81;
+        }
+
+        .card.libre {
+            border-top-color: #16a34a;
+        }
+
+        .card.alerta {
+            border-top-color: #dc2626 !important;
+            background: #fee2e2;
+        }
+
+        .puesto {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #0f4c81;
+        }
+
+        .paciente {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .detalle {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .estado {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .estado-activa {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .estado-finalizada {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .estado-libre {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alerta-texto {
+            color: #b91c1c;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .acciones {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            background: #0f4c81;
+            color: white;
+        }
+
+        .btn-sec {
+            background: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Sala de Diálisis</h1>
+    <div>Fecha: {{ hoy }}</div>
+
+    <div class="nav">
+        <a href="/">Dashboard</a>
+
+        {% if es_administracion or es_superadmin or request.user.is_staff %}
+            <a href="/admin/">Admin</a>
+        {% endif %}
+
+        <span class="pill">Usuario: {{ request.user.username }}</span>
+
+        {% if es_enfermero %}
+            <span class="pill">Rol: Enfermero</span>
+        {% elif es_medico %}
+            <span class="pill">Rol: Médico</span>
+        {% elif es_administracion %}
+            <span class="pill">Rol: Administración</span>
+        {% elif es_superadmin %}
+            <span class="pill">Rol: Superadmin</span>
+        {% endif %}
+
+        <form method="post" action="/logout/" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Salir</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="turnos">
+        <a href="?turno=manana" class="{% if turno_actual == 'manana' %}active{% endif %}">Mañana</a>
+        <a href="?turno=tarde" class="{% if turno_actual == 'tarde' %}active{% endif %}">Tarde</a>
+        <a href="?turno=noche" class="{% if turno_actual == 'noche' %}active{% endif %}">Noche</a>
+    </div>
+
+    <div class="grid">
+        {% for item in puestos_data %}
+
+            {% if item.sesion %}
+                <div class="card ocupado {% if item.alerta %}alerta{% endif %}">
+
+                    <div class="puesto">Puesto {{ item.puesto.numero }}</div>
+                    <div class="paciente">{{ item.sesion.paciente }}</div>
+
+                    <div class="detalle"><strong>TA inicial:</strong> {{ item.sesion.ta_inicial|default:"-" }}</div>
+                    <div class="detalle"><strong>TA final:</strong> {{ item.sesion.ta_final|default:"-" }}</div>
+                    <div class="detalle"><strong>Peso pre:</strong> {{ item.sesion.peso_pre|default:"-" }}</div>
+                    <div class="detalle"><strong>Peso post:</strong> {{ item.sesion.peso_post|default:"-" }}</div>
+
+                    {% if item.sesion.finalizada %}
+                        <span class="estado estado-finalizada">Finalizada</span>
+                    {% else %}
+                        <span class="estado estado-activa">En sesión</span>
+                    {% endif %}
+
+                    {% if item.alerta %}
+                        <div class="alerta-texto">⚠️ Posible hipotensión</div>
+                    {% endif %}
+
+                    <div class="acciones">
+
+                        {% if es_enfermero or es_superadmin %}
+                            <a class="btn" href="{% url 'editar_signos' item.sesion.id %}">
+                                Editar signos
+                            </a>
+                        {% endif %}
+
+                        {% if es_enfermero or es_superadmin %}
+                            {% if not item.sesion.finalizada %}
+                                <a class="btn" href="{% url 'finalizar_sesion' item.sesion.id %}">
+                                    Finalizar sesión
+                                </a>
+                            {% endif %}
+                        {% endif %}
+{% if es_medico or es_administracion or es_superadmin or es_enfermero %}
+    <a class="btn btn-sec" href="{% url 'historial_paciente' item.sesion.paciente.id %}">
+        Ver historial
+    </a>
+{% endif %}
+
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="card libre">
+
+                    <div class="puesto">Puesto {{ item.puesto.numero }}</div>
+                    <div class="paciente">Disponible</div>
+
+                    <div class="detalle">Sin paciente asignado</div>
+
+                    <span class="estado estado-libre">Libre</span>
+
+                    <div class="acciones">
+                        {% if es_enfermero or es_superadmin %}
+                            <a class="btn" href="{% url 'iniciar_sesion' item.puesto.id %}">
+                                Iniciar sesión
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+        {% endfor %}
+    </div>
+
+</div>
+
+</body>
+</html>

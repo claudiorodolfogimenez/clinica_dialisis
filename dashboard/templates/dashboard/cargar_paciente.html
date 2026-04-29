@@ -1,0 +1,19 @@
+<h2>Cargar paciente al turno {{ turno }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Paciente:</label>
+    <select name="paciente">
+        {% for p in pacientes %}
+            <option value="{{ p.id }}">{{ p }}</option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+    <button type="submit">Cargar</button>
+</form>
+
+<br>
+<a href="/turno/?turno={{ turno }}">Volver</a>

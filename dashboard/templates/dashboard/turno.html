@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Turno de Diálisis</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #eef3f8;
+    margin: 0;
+}
+
+.header {
+    background: #0f4c81;
+    color: white;
+    padding: 20px 35px;
+}
+
+.container {
+    max-width: 1250px;
+    margin: auto;
+    padding: 22px;
+}
+
+.turnos {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.turnos a, .turnos button {
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: none;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.turnos a {
+    background: white;
+    color: #0f4c81;
+}
+
+.turnos a.activo {
+    background: #0f4c81;
+    color: white;
+}
+
+.btn-cargar {
+    background-color: #16a34a !important;
+    color: white !important;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-cargar:hover {
+    background-color: #15803d !important;
+}
+
+.form-carga {
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 22px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    display: none;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 180px auto;
+    gap: 12px;
+    align-items: end;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 6px;
+    color: #374151;
+}
+
+select, button {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+}
+
+.btn-submit {
+    background: #0f4c81;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+.seccion {
+    margin-top: 28px;
+}
+
+.seccion h2 {
+    color: #0f4c81;
+}
+
+.contador {
+    background: #e5e7eb;
+    color: #111827;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    margin-left: 8px;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    border-left: 8px solid #cbd5e1;
+}
+
+.card.pendiente {
+    border-left-color: #f59e0b;
+}
+
+.card.activa {
+    border-left-color: #2563eb;
+}
+
+.card.finalizada {
+    border-left-color: #16a34a;
+}
+
+.nombre {
+    color: #0f4c81;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.chip {
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.chip-pendiente {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.chip-activa {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.chip-finalizada {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.chip-gris {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.chip-duracion {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.dato {
+    background: #f8fafc;
+    padding: 11px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+
+.dato-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: bold;
+}
+
+.dato-valor {
+    color: #0f4c81;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.ta-normal {
+    color: #16a34a !important;
+}
+
+.ta-alta {
+    color: #dc2626 !important;
+}
+
+.ta-baja {
+    color: #f59e0b !important;
+}
+
+.acciones {
+    margin-top: 14px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    background: #0f4c81;
+    color: white;
+    text-decoration: none;
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btn-danger {
+    background: #dc2626;
+}
+
+.btn-gray {
+    background: #6b7280;
+}
+
+.vacio {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    color: #64748b;
+}
+
+.nav-btn {
+    background: white;
+    color: #0f4c81;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-btn:hover {
+    background: #dbeafe;
+}
+
+.nav-user {
+    background: #1e3a5f;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.salir {
+    background: #dc2626 !important;
+    color: white !important;
+}
+</style>
+
+<script>
+function toggleCarga() {
+    const form = document.getElementById("formCarga");
+    if (form.style.display === "none" || form.style.display === "") {
+        form.style.display = "block";
+    } else {
+        form.style.display = "none";
+    }
+}
+</script>
+
+</head>
+
+<body>
+
+<div class="header">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+            <h1 style="margin:0;">Turno de Diálisis</h1>
+            <div>Fecha: {{ hoy }}</div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <a href="/" class="nav-btn">🏠 Dashboard</a>
+            <a href="/turno/" class="nav-btn">🔄 Turno</a>
+
+            <span class="nav-user">
+                👤 {{ request.user.username }}
+            </span>
+
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="nav-btn salir">
+                    🚪 Salir
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="turnos">
+        <a href="/turno/?turno=manana" class="{% if turno_actual == 'manana' %}activo{% endif %}">Mañana</a>
+        <a href="/turno/?turno=tarde" class="{% if turno_actual == 'tarde' %}activo{% endif %}">Tarde</a>
+        <a href="/turno/?turno=noche" class="{% if turno_actual == 'noche' %}activo{% endif %}">Noche</a>
+
+        <button type="button" onclick="toggleCarga()" class="btn-cargar">
+            ➕ Nueva sesión
+        </button>
+
+        <a href="{% url 'crear_paciente_basico' %}" class="btn-cargar">
+            + Nuevo paciente
+        </a>
+    </div>
+
+    <div id="formCarga" class="form-carga">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-grid">
+                <div>
+                    <label>Paciente</label>
+                    <select name="paciente" required>
+                        <option value="">Seleccione paciente</option>
+                        {% for p in pacientes %}
+                            <option value="{{ p.id }}">{{ p.apellido }}, {{ p.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label>Puesto</label>
+                    <select name="puesto">
+                        <option value="">Sin puesto</option>
+                        {% for puesto in puestos %}
+                            <option value="{{ puesto.id }}">Puesto {{ puesto.numero }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button class="btn-submit" type="submit">
+                    Agregar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="seccion">
+        <h2>Pacientes pendientes <span class="contador">{{ sesiones_pendientes|length }}</span></h2>
+
+        {% for sesion in sesiones_pendientes %}
+        <div class="card pendiente">
+            <div class="nombre">{{ sesion.paciente }}</div>
+
+            <div class="chips">
+                <span class="chip chip-pendiente">Pendiente</span>
+                <span class="chip chip-gris">{{ sesion.fecha }}</span>
+                <span class="chip chip-gris">{{ sesion.puesto|default:"Sin puesto" }}</span>
+            </div>
+
+            <div class="datos">
+                <div class="dato">
+                    <div class="dato-label">TA inicial</div>
+                    <div class="dato-valor">{{ sesion.ta_inicial|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Peso pre</div>
+                    <div class="dato-valor">{{ sesion.peso_pre|default:"-" }}</div>
+                </div>
+            </div>
+
+            <div class="acciones">
+                <a class="btn" href="{% url 'iniciar_sesion' sesion.id %}">
+                    Iniciar sesión
+                </a>
+            </div>
+        </div>
+        {% empty %}
+            <div class="vacio">No hay pacientes pendientes.</div>
+        {% endfor %}
+    </div>
+
+    <div class="seccion">
+        <h2>Pacientes en sesión <span class="contador">{{ sesiones_activas|length }}</span></h2>
+
+        {% for sesion in sesiones_activas %}
+        <div class="card activa">
+            <div class="nombre">{{ sesion.paciente }}</div>
+
+            <div class="chips">
+                <span class="chip chip-activa">En sesión</span>
+                <span class="chip chip-gris">{{ sesion.fecha }}</span>
+                <span class="chip chip-gris">{{ sesion.puesto|default:"Sin puesto" }}</span>
+
+                {% if sesion.duracion %}
+                    <span class="chip chip-duracion">⏱ Duración: {{ sesion.duracion }}</span>
+                {% endif %}
+            </div>
+
+            <div class="datos">
+                <div class="dato">
+                    <div class="dato-label">Peso pre</div>
+                    <div class="dato-valor">{{ sesion.peso_pre|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">UF</div>
+                    <div class="dato-valor">{{ sesion.planilla.uf_prescripta|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Temp</div>
+                    <div class="dato-valor">{{ sesion.planilla.temperatura_inicial|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">FC</div>
+                    <div class="dato-valor">{{ sesion.planilla.frecuencia_cardiaca_inicial|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">TA inicial</div>
+                    <div class="dato-valor">
+                        {% if sesion.ta_inicial %}
+                            {% if "18" in sesion.ta_inicial or "19" in sesion.ta_inicial or "20" in sesion.ta_inicial %}
+                                <span class="ta-alta">{{ sesion.ta_inicial }}</span>
+                            {% elif "90" in sesion.ta_inicial or "80" in sesion.ta_inicial or "70" in sesion.ta_inicial %}
+                                <span class="ta-baja">{{ sesion.ta_inicial }}</span>
+                            {% else %}
+                                <span class="ta-normal">{{ sesion.ta_inicial }}</span>
+                            {% endif %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Heparina</div>
+                    <div class="dato-valor">{{ sesion.planilla.heparina_inicial|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Hora inicio</div>
+                    <div class="dato-valor">{{ sesion.planilla.hora_inicio|default:"-" }}</div>
+                </div>
+            </div>
+
+            <div class="acciones">
+                <a class="btn" href="{% url 'editar_signos' sesion.id %}">
+                    Planilla HD
+                </a>
+
+                <a class="btn btn-danger" href="{% url 'finalizar_sesion' sesion.id %}">
+                    Finalizar
+                </a>
+            </div>
+        </div>
+        {% empty %}
+            <div class="vacio">No hay pacientes en sesión.</div>
+        {% endfor %}
+    </div>
+
+    <div class="seccion">
+        <h2>Pacientes finalizados <span class="contador">{{ sesiones_finalizadas|length }}</span></h2>
+
+        {% for sesion in sesiones_finalizadas %}
+        <div class="card finalizada">
+            <div class="nombre">{{ sesion.paciente }}</div>
+
+            <div class="chips">
+                <span class="chip chip-finalizada">Finalizada</span>
+                <span class="chip chip-gris">{{ sesion.fecha }}</span>
+                <span class="chip chip-gris">{{ sesion.puesto|default:"Sin puesto" }}</span>
+
+                {% if sesion.duracion %}
+                    <span class="chip chip-duracion">⏱ Duración: {{ sesion.duracion }}</span>
+                {% endif %}
+            </div>
+
+            <div class="datos">
+                <div class="dato">
+                    <div class="dato-label">TA inicial</div>
+                    <div class="dato-valor">{{ sesion.ta_inicial|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">TA final</div>
+                    <div class="dato-valor">
+                        {% if sesion.ta_final %}
+                            {% if "18" in sesion.ta_final or "19" in sesion.ta_final or "20" in sesion.ta_final %}
+                                <span class="ta-alta">{{ sesion.ta_final }}</span>
+                            {% elif "90" in sesion.ta_final or "80" in sesion.ta_final or "70" in sesion.ta_final %}
+                                <span class="ta-baja">{{ sesion.ta_final }}</span>
+                            {% else %}
+                                <span class="ta-normal">{{ sesion.ta_final }}</span>
+                            {% endif %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Peso pre</div>
+                    <div class="dato-valor">{{ sesion.peso_pre|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Peso post</div>
+                    <div class="dato-valor">{{ sesion.peso_post|default:"-" }}</div>
+                </div>
+            </div>
+
+            <div class="acciones">
+                <a class="btn btn-gray" href="{% url 'editar_signos' sesion.id %}">
+                    Ver planilla
+                </a>
+            </div>
+        </div>
+        {% empty %}
+            <div class="vacio">No hay pacientes finalizados.</div>
+        {% endfor %}
+    </div>
+
+</div>
+
+</body>
+</html>

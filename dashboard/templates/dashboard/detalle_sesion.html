@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Sesión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #0f4c81;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px 0;
+        }
+
+        .nav {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav a, .nav button, .pill {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #0f4c81;
+            margin-top: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .dato {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .dato-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .dato-valor {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0f4c81;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .ok {
+            color: #166534;
+            font-weight: bold;
+        }
+
+        .pendiente {
+            color: #b45309;
+            font-weight: bold;
+        }
+
+        .texto {
+            white-space: pre-line;
+            line-height: 1.45;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .btn {
+            text-decoration: none;
+            background: #0f4c81;
+            color: white;
+            padding: 9px 13px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn-sec {
+            background: #6b7280;
+        }
+
+        .alerta {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .vacio {
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Detalle de Sesión</h1>
+    <div>{{ paciente.apellido }}, {{ paciente.nombre }} - {{ sesion.fecha }}</div>
+
+    <div class="nav">
+        <a href="/turno/?turno={{ sesion.turno }}">Volver al turno</a>
+        <a href="{% url 'historial_paciente' paciente.id %}">Historial paciente</a>
+
+        {% if es_administracion or es_superadmin or request.user.is_staff %}
+            <a href="/admin/">Admin</a>
+        {% endif %}
+
+        <span class="pill">Usuario: {{ request.user.username }}</span>
+
+        <form method="post" action="/logout/" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Salir</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Datos del paciente</h2>
+
+        <div class="grid">
+            <div class="dato">
+                <div class="dato-label">Paciente</div>
+                <div class="dato-valor">{{ paciente.apellido }}, {{ paciente.nombre }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">DNI</div>
+                <div class="dato-valor">{{ paciente.dni|default:"-" }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">Obra social</div>
+                <div class="dato-valor">{{ paciente.obra_social|default:"-" }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">Teléfono</div>
+                <div class="dato-valor">{{ paciente.telefono|default:"-" }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">Acceso vascular</div>
+                <div class="dato-valor">{{ paciente.acceso_vascular|default:"-" }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">Médico tratante</div>
+                <div class="dato-valor">{{ paciente.medico_tratante|default:"-" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Datos de la sesión</h2>
+
+        <div class="grid">
+            <div class="dato">
+                <div class="dato-label">Fecha</div>
+                <div class="dato-valor">{{ sesion.fecha }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">Turno</div>
+                <div class="dato-valor">{{ sesion.get_turno_display }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">Puesto</div>
+                <div class="dato-valor">{{ sesion.puesto|default:"-" }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">Estado</div>
+                <div class="dato-valor">{{ sesion.get_estado_display }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">TA inicial</div>
+                <div class="dato-valor">{{ sesion.ta_inicial|default:"-" }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">TA final</div>
+                <div class="dato-valor">{{ sesion.ta_final|default:"-" }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">Peso pre</div>
+                <div class="dato-valor">{{ sesion.peso_pre|default:"-" }}</div>
+            </div>
+
+            <div class="dato">
+                <div class="dato-label">Peso post</div>
+                <div class="dato-valor">{{ sesion.peso_post|default:"-" }}</div>
+            </div>
+        </div>
+
+        {% if sesion.observaciones %}
+            <div style="margin-top:16px;">
+                <strong>Observaciones:</strong>
+                <div class="texto">{{ sesion.observaciones }}</div>
+            </div>
+        {% endif %}
+
+        <div class="acciones">
+            {% if es_enfermero or es_superadmin %}
+                <a class="btn" href="{% url 'editar_signos' sesion.id %}">Editar signos</a>
+                {% if not sesion.finalizada %}
+                    <a class="btn" href="{% url 'finalizar_sesion' sesion.id %}">Finalizar sesión</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Planilla de Hemodiálisis</h2>
+
+        {% if planilla_hemodialisis %}
+            <div class="grid">
+                <div class="dato">
+                    <div class="dato-label">Acceso vascular</div>
+                    <div class="dato-valor">{{ planilla_hemodialisis.acceso_vascular|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Dializador</div>
+                    <div class="dato-valor">{{ planilla_hemodialisis.dializador|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Concentrado</div>
+                    <div class="dato-valor">{{ planilla_hemodialisis.concentrado|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Peso seco</div>
+                    <div class="dato-valor">{{ planilla_hemodialisis.peso_seco|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">QB</div>
+                    <div class="dato-valor">{{ planilla_hemodialisis.qb|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Tiempo</div>
+                    <div class="dato-valor">{{ planilla_hemodialisis.tiempo|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Heparina inicial</div>
+                    <div class="dato-valor">{{ planilla_hemodialisis.heparina_inicial|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Heparina hora</div>
+                    <div class="dato-valor">{{ planilla_hemodialisis.heparina_hora|default:"-" }}</div>
+                </div>
+            </div>
+
+            {% if planilla_hemodialisis.observaciones %}
+                <div style="margin-top:16px;">
+                    <strong>Observaciones:</strong>
+                    <div class="texto">{{ planilla_hemodialisis.observaciones }}</div>
+                </div>
+            {% endif %}
+
+            <h3>Controles horarios</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>TA</th>
+                        <th>Pulso</th>
+                        <th>QB</th>
+                        <th>Presión venosa</th>
+                        <th>UF</th>
+                        <th>Observación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for control in controles %}
+                    <tr>
+                        <td>{{ control.hora }}</td>
+                        <td>{{ control.ta|default:"-" }}</td>
+                        <td>{{ control.pulso|default:"-" }}</td>
+                        <td>{{ control.qb|default:"-" }}</td>
+                        <td>{{ control.presion_venosa|default:"-" }}</td>
+                        <td>{{ control.ultrafiltracion|default:"-" }}</td>
+                        <td>{{ control.observacion|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="vacio">No hay controles horarios cargados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if es_administracion or es_superadmin or request.user.is_staff %}
+                <div class="acciones">
+                    <a class="btn btn-sec" href="/admin/sesiones/planillahemodialisis/{{ planilla_hemodialisis.id }}/change/">
+                        Editar planilla de hemodiálisis
+                    </a>
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="vacio">No hay planilla de hemodiálisis cargada para esta sesión.</p>
+
+            {% if es_administracion or es_superadmin or request.user.is_staff %}
+                <div class="acciones">
+                    <a class="btn" href="/admin/sesiones/planillahemodialisis/add/">Crear planilla de hemodiálisis</a>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Planilla de Enfermería</h2>
+
+        {% if planilla_enfermeria %}
+            <div>
+                <strong>Indicaciones médicas:</strong>
+                <div class="texto">{{ planilla_enfermeria.indicaciones_medicas|default:"-" }}</div>
+            </div>
+
+            <div class="grid" style="margin-top:16px;">
+                <div class="dato">
+                    <div class="dato-label">Eritropoyetina</div>
+                    <div class="dato-valor">{{ planilla_enfermeria.eritropoyetina|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Hierro</div>
+                    <div class="dato-valor">{{ planilla_enfermeria.hierro|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Vacunación</div>
+                    <div class="dato-valor">{{ planilla_enfermeria.vacunacion|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Antibiótico</div>
+                    <div class="dato-valor">{{ planilla_enfermeria.antibiotico|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Paracetamol</div>
+                    <div class="dato-valor">{{ planilla_enfermeria.paracetamol|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Otro</div>
+                    <div class="dato-valor">{{ planilla_enfermeria.otro|default:"-" }}</div>
+                </div>
+            </div>
+
+            <div style="margin-top:16px;">
+                <strong>Medicación entregada:</strong>
+                <div class="texto">{{ planilla_enfermeria.medicacion_entregada|default:"-" }}</div>
+            </div>
+
+            <div style="margin-top:16px;">
+                <strong>Evolución de enfermería:</strong>
+                <div class="texto">{{ planilla_enfermeria.evolucion_enfermeria|default:"-" }}</div>
+            </div>
+
+            <div class="grid" style="margin-top:16px;">
+                <div class="dato">
+                    <div class="dato-label">Firma médico</div>
+                    <div class="dato-valor">{{ planilla_enfermeria.firma_medico|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Firma enfermero</div>
+                    <div class="dato-valor">{{ planilla_enfermeria.firma_enfermero|default:"-" }}</div>
+                </div>
+
+                <div class="dato">
+                    <div class="dato-label">Firma paciente</div>
+                    <div class="dato-valor">{{ planilla_enfermeria.firma_paciente|default:"-" }}</div>
+                </div>
+            </div>
+
+            {% if es_administracion or es_superadmin or request.user.is_staff %}
+                <div class="acciones">
+                    <a class="btn btn-sec" href="/admin/sesiones/planillaenfermeria/{{ planilla_enfermeria.id }}/change/">
+                        Editar planilla de enfermería
+                    </a>
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="vacio">No hay planilla de enfermería cargada para esta sesión.</p>
+
+            {% if es_administracion or es_superadmin or request.user.is_staff %}
+                <div class="acciones">
+                    <a class="btn" href="/admin/sesiones/planillaenfermeria/add/">Crear planilla de enfermería</a>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>

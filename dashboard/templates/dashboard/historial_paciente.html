@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial del paciente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #0f4c81;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px 0;
+        }
+
+        .nav {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav a, .nav button, .pill {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .pill {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .datos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .dato {
+            font-size: 14px;
+        }
+
+        .dato strong {
+            color: #0f4c81;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .ok {
+            color: #166534;
+            font-weight: bold;
+        }
+
+        .pendiente {
+            color: #b91c1c;
+            font-weight: bold;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            background: #0f4c81;
+            color: white;
+            display: inline-block;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Historial del Paciente</h1>
+    <div class="nav">
+        <a href="/">Dashboard</a>
+        <a href="/sala/">Sala</a>
+
+        {% if es_administracion or es_superadmin or request.user.is_staff %}
+            <a href="/admin/">Admin</a>
+        {% endif %}
+
+        <span class="pill">Usuario: {{ request.user.username }}</span>
+
+        <form method="post" action="/logout/" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Salir</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="card">
+        <h2>{{ paciente.apellido }}, {{ paciente.nombre }}</h2>
+
+        <div class="datos">
+            <div class="dato"><strong>DNI:</strong> {{ paciente.dni }}</div>
+            <div class="dato"><strong>Obra social:</strong> {{ paciente.obra_social|default:"-" }}</div>
+            <div class="dato"><strong>Teléfono:</strong> {{ paciente.telefono|default:"-" }}</div>
+            <div class="dato"><strong>Médico tratante:</strong> {{ paciente.medico_tratante|default:"-" }}</div>
+            <div class="dato"><strong>Acceso vascular:</strong> {{ paciente.acceso_vascular|default:"-" }}</div>
+            <div class="dato"><strong>Activo:</strong> {{ paciente.activo|yesno:"Sí,No" }}</div>
+        </div>
+
+        {% if paciente.observaciones %}
+            <div style="margin-top:16px;">
+                <strong>Observaciones generales:</strong><br>
+                {{ paciente.observaciones }}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Sesiones registradas</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Turno</th>
+                    <th>Puesto</th>
+                    <th>TA inicial</th>
+                    <th>TA final</th>
+                    <th>Peso pre</th>
+                    <th>Peso post</th>
+                    <th>Estado</th>
+                    <th>Observaciones</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sesion in sesiones %}
+                <tr>
+                    <td>{{ sesion.fecha }}</td>
+                    <td>{{ sesion.get_turno_display }}</td>
+                    <td>{{ sesion.puesto|default:"-" }}</td>
+                    <td>{{ sesion.ta_inicial|default:"-" }}</td>
+                    <td>{{ sesion.ta_final|default:"-" }}</td>
+                    <td>{{ sesion.peso_pre|default:"-" }}</td>
+                    <td>{{ sesion.peso_post|default:"-" }}</td>
+                    <td>
+                        {% if sesion.finalizada %}
+                            <span class="ok">Finalizada</span>
+                        {% else %}
+                            <span class="pendiente">Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ sesion.observaciones|default:"-" }}</td>
+                    <td>
+                        <div class="acciones">
+                            {% if es_enfermero or es_superadmin %}
+                                <a class="btn" href="{% url 'editar_signos' sesion.id %}">Editar</a>
+                            {% endif %}
+                            {% if es_enfermero or es_superadmin %}
+                                {% if not sesion.finalizada %}
+                                    <a class="btn" href="{% url 'finalizar_sesion' sesion.id %}">Finalizar</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10">No hay sesiones registradas para este paciente.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

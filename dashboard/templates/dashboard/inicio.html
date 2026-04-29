@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard - Clínica de Diálisis</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #eef3f8;
+    margin: 0;
+    color: #1f2937;
+}
+
+.header {
+    background: #0f4c81;
+    color: white;
+    padding: 22px 35px;
+}
+
+.header h1 {
+    margin: 0 0 8px 0;
+}
+
+.nav {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.nav a, .nav button, .pill {
+    color: white;
+    text-decoration: none;
+    background: rgba(255,255,255,0.2);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.salir {
+    background: #dc2626 !important;
+}
+
+.container {
+    max-width: 1250px;
+    margin: auto;
+    padding: 24px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+    margin: 0;
+    color: #334155;
+}
+
+.valor {
+    font-size: 34px;
+    font-weight: bold;
+    color: #0f4c81;
+    margin-top: 10px;
+}
+
+.panel {
+    background: white;
+    margin-top: 24px;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+.panel h2 {
+    color: #0f4c81;
+    margin-top: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+th {
+    background: #f8fafc;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Dashboard - Clínica de Diálisis</h1>
+    <div>Fecha: {{ hoy }}</div>
+
+    <div class="nav">
+        <a href="/turno/">Turno</a>
+        <a href="/admin/">Admin</a>
+        <span class="pill">Usuario: {{ request.user.username }}</span>
+
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="salir">Salir</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="cards">
+        <div class="card">
+            <h3>Pacientes activos</h3>
+            <div class="valor">{{ pacientes_activos }}</div>
+        </div>
+
+        <div class="card">
+            <h3>Sesiones hoy</h3>
+            <div class="valor">{{ sesiones_hoy }}</div>
+        </div>
+
+        <div class="card">
+            <h3>En sesión</h3>
+            <div class="valor">{{ sesiones_activas }}</div>
+        </div>
+
+        <div class="card">
+            <h3>Pendientes</h3>
+            <div class="valor">{{ sesiones_pendientes }}</div>
+        </div>
+
+        <div class="card">
+            <h3>Finalizadas</h3>
+            <div class="valor">{{ sesiones_finalizadas }}</div>
+        </div>
+
+        <div class="card">
+            <h3>Stock en alerta</h3>
+            <div class="valor">{{ stock_alerta }}</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Últimas sesiones</h2>
+
+        <table>
+            <tr>
+                <th>Fecha</th>
+                <th>Paciente</th>
+                <th>Turno</th>
+                <th>Puesto</th>
+                <th>Estado</th>
+            </tr>
+
+            {% for s in ultimas_sesiones %}
+            <tr>
+               <td>
+    {{ s.fecha }}
+    {% if s.planilla and s.planilla.hora_inicio %}
+        - {{ s.planilla.hora_inicio }}
+    {% endif %}
+</td>
+                <td>{{ s.paciente }}</td>
+                <td>{{ s.get_turno_display }}</td>
+                <td>{{ s.puesto|default:"-" }}</td>
+                <td>{{ s.get_estado_display }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No hay sesiones cargadas.</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

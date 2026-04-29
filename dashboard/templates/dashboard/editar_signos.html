@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Planilla HD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3f8;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #0f4c81;
+            color: white;
+            padding: 18px 30px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px 0;
+        }
+
+        .header .sub {
+            font-size: 15px;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1350px;
+            margin: 22px auto;
+            padding: 0 20px;
+        }
+
+        .paciente-box {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 18px;
+            border-left: 8px solid #0f4c81;
+        }
+
+        .paciente-nombre {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0f4c81;
+            margin-bottom: 10px;
+        }
+
+        .chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 7px 11px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .chip-blue {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 18px;
+        }
+
+        .card h2 {
+            color: #0f4c81;
+            margin: 0 0 16px 0;
+            font-size: 21px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 5px;
+            color: #374151;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 15px;
+            background: #f8fafc;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #0f4c81;
+            background: white;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .tabla-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 950px;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        th, td {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: #334155;
+            font-size: 13px;
+        }
+
+        td:first-child {
+            font-weight: bold;
+            color: #0f4c81;
+            white-space: nowrap;
+        }
+
+        .acciones {
+            position: sticky;
+            bottom: 0;
+            background: rgba(238,243,248,0.96);
+            padding: 14px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-top: 1px solid #dbe4ee;
+        }
+
+        .btn {
+            text-decoration: none;
+            border: none;
+            background: #0f4c81;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .btn-sec {
+            background: #6b7280;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .ayuda {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Planilla de Hemodiálisis</h1>
+    <div class="sub">Carga durante la sesión del paciente</div>
+</div>
+
+<div class="container">
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="paciente-box">
+        <div class="paciente-nombre">{{ sesion.paciente }}</div>
+        <div class="chips">
+            <span class="chip chip-blue">{{ sesion.fecha }}</span>
+            <span class="chip">Turno: {{ sesion.get_turno_display }}</span>
+            <span class="chip">{{ sesion.puesto|default:"Sin puesto" }}</span>
+            <span class="chip">Estado: {{ sesion.get_estado_display }}</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="section-title">
+            <h2>Datos generales</h2>
+            <span class="ayuda">Información técnica del tratamiento</span>
+        </div>
+
+        <div class="grid">
+            <div>
+                <label>Acceso vascular</label>
+                <input name="acceso_vascular" value="{{ planilla.acceso_vascular }}">
+            </div>
+
+            <div>
+                <label>Dializador</label>
+                <input name="dializador" value="{{ planilla.dializador }}">
+            </div>
+
+            <div>
+                <label>Concentrado</label>
+                <input name="concentrado" value="{{ planilla.concentrado }}">
+            </div>
+
+            <div>
+                <label>Agujas</label>
+                <input name="agujas" value="{{ planilla.agujas }}">
+            </div>
+
+            <div>
+                <label>Talla</label>
+                <input name="talla" value="{{ planilla.talla }}">
+            </div>
+
+            <div>
+                <label>Peso seco</label>
+                <input type="number" step="0.01" name="peso_seco" value="{{ planilla.peso_seco|default:'' }}">
+            </div>
+
+            <div>
+                <label>TD</label>
+                <input name="td" value="{{ planilla.td }}">
+            </div>
+
+            <div>
+                <label>QB</label>
+                <input name="qb" value="{{ planilla.qb }}">
+            </div>
+
+            <div>
+                <label>QD</label>
+                <input name="qd" value="{{ planilla.qd }}">
+            </div>
+
+            <div>
+                <label>Na</label>
+                <input name="na" value="{{ planilla.na }}">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="section-title">
+            <h2>Parámetros iniciales</h2>
+            <span class="ayuda">Carga al conectar al paciente</span>
+        </div>
+
+        <div class="grid">
+            <div>
+                <label>Peso pre</label>
+                <input type="number" step="0.01" name="peso_pre" value="{{ planilla.peso_pre|default:'' }}">
+            </div>
+
+            <div>
+                <label>UF prescripta</label>
+                <input name="uf_prescripta" value="{{ planilla.uf_prescripta }}">
+            </div>
+
+            <div>
+                <label>Temperatura</label>
+                <input name="temperatura_inicial" value="{{ planilla.temperatura_inicial }}">
+            </div>
+
+            <div>
+                <label>Frecuencia cardíaca</label>
+                <input name="frecuencia_cardiaca_inicial" value="{{ planilla.frecuencia_cardiaca_inicial }}">
+            </div>
+
+            <div>
+                <label>TA inicial</label>
+                <input name="ta_inicial" value="{{ planilla.ta_inicial }}" placeholder="Ej: 120/80">
+            </div>
+
+            <div>
+                <label>Heparina inicial</label>
+                <input name="heparina_inicial" value="{{ planilla.heparina_inicial }}">
+            </div>
+
+            <div>
+                <label>Hora inicio</label>
+                <input name="hora_inicio" value="{{ planilla.hora_inicio }}" placeholder="Ej: 08:15">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+    <h2>Controles por hora</h2>
+
+    <div style="overflow-x:auto;">
+        <table style="width:100%; min-width:900px; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Hora</th>
+                    <th>TA</th>
+                    <th>UF</th>
+                    <th>P. Venosa</th>
+                    <th>QB</th>
+                    <th>Heparina hora</th>
+                    <th>Observación</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for control in controles %}
+                <tr>
+                    <td><strong>{{ control.hora }}ª hora</strong></td>
+
+                    <td>
+                        <input name="control_{{ control.hora }}_ta"
+                               value="{{ control.ta }}"
+                               placeholder="Ej: 110/70">
+                    </td>
+
+                    <td>
+                        <input name="control_{{ control.hora }}_uf"
+                               value="{{ control.ultrafiltracion }}">
+                    </td>
+
+                    <td>
+                        <input name="control_{{ control.hora }}_pv"
+                               value="{{ control.presion_venosa }}">
+                    </td>
+
+                    <td>
+                        <input name="control_{{ control.hora }}_qb"
+                               value="{{ control.qb }}">
+                    </td>
+
+                    <td>
+                        <input name="control_{{ control.hora }}_heparina"
+                               value="{{ control.heparina_hora }}">
+                    </td>
+
+                    <td>
+                        <input name="control_{{ control.hora }}_observacion"
+                               value="{{ control.observacion }}">
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No hay controles cargados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+    <div class="card">
+        <div class="section-title">
+            <h2>Parámetros finales</h2>
+            <span class="ayuda">Carga al desconectar al paciente</span>
+        </div>
+
+        <div class="grid">
+            <div>
+                <label>Peso post</label>
+                <input type="number" step="0.01" name="peso_post" value="{{ planilla.peso_post|default:'' }}">
+            </div>
+
+            <div>
+                <label>Temperatura final</label>
+                <input name="temperatura_final" value="{{ planilla.temperatura_final }}">
+            </div>
+
+            <div>
+                <label>TA de egreso</label>
+                <input name="ta_egreso" value="{{ planilla.ta_egreso }}" placeholder="Ej: 100/60">
+            </div>
+
+            <div>
+                <label>Frecuencia cardíaca final</label>
+                <input name="frecuencia_cardiaca_final" value="{{ planilla.frecuencia_cardiaca_final }}">
+            </div>
+
+            <div>
+                <label>UF final</label>
+                <input name="uf_final" value="{{ planilla.uf_final }}">
+            </div>
+
+            <div>
+                <label>Hora fin</label>
+                <input name="hora_fin" value="{{ planilla.hora_fin }}" placeholder="Ej: 12:15">
+            </div>
+
+            <div>
+                <label>ATB</label>
+                <input name="atb" value="{{ planilla.atb }}">
+            </div>
+        </div>
+
+        <div style="margin-top:15px;">
+            <label>Observaciones</label>
+            <textarea name="observaciones">{{ planilla.observaciones }}</textarea>
+        </div>
+    </div>
+
+    <div class="acciones">
+        <button type="submit" class="btn">Guardar planilla HD</button>
+        <a href="/turno/?turno={{ sesion.turno }}" class="btn btn-sec">Volver al turno</a>
+        {% if not sesion.finalizada %}
+            <a href="{% url 'finalizar_sesion' sesion.id %}" class="btn btn-danger">Finalizar sesión</a>
+        {% endif %}
+    </div>
+
+</form>
+
+</div>
+
+</body>
+</html>

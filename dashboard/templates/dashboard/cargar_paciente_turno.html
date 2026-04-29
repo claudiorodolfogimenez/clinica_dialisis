@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cargar paciente al turno</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #0f4c81;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .acciones {
+            margin-top: 22px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            text-decoration: none;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-primario {
+            background: #0f4c81;
+            color: white;
+        }
+
+        .btn-secundario {
+            background: #6b7280;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cargar paciente al turno</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <label for="paciente">Paciente</label>
+            <select name="paciente" id="paciente" required>
+                {% for paciente in pacientes %}
+                    <option value="{{ paciente.id }}">{{ paciente.apellido }}, {{ paciente.nombre }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="turno">Turno</label>
+            <select name="turno" id="turno" required>
+                <option value="manana" {% if turno_actual == "manana" %}selected{% endif %}>Mañana</option>
+                <option value="tarde" {% if turno_actual == "tarde" %}selected{% endif %}>Tarde</option>
+                <option value="noche" {% if turno_actual == "noche" %}selected{% endif %}>Noche</option>
+            </select>
+
+            <label for="puesto">Puesto (opcional)</label>
+            <select name="puesto" id="puesto">
+                <option value="">Sin asignar</option>
+                {% for puesto in puestos %}
+                    <option value="{{ puesto.id }}">Puesto {{ puesto.numero }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="acciones">
+                <button type="submit" class="btn btn-primario">Guardar</button>
+                <a href="{% url 'turno' %}?turno={{ turno_actual }}" class="btn btn-secundario">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

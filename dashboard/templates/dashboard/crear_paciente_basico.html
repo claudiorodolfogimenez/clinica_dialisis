@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Paciente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3f8;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #0f4c81;
+        }
+
+        label {
+            display: block;
+            margin-top: 14px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            box-sizing: border-box;
+        }
+
+        .acciones {
+            margin-top: 20px;
+        }
+
+        button, a {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        button {
+            background: #0f4c81;
+            color: white;
+        }
+
+        a {
+            background: #6b7280;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Nuevo paciente</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Apellido</label>
+        <input name="apellido" required>
+
+        <label>Nombre</label>
+        <input name="nombre" required>
+
+        <label>DNI</label>
+        <input name="dni">
+
+        <div class="acciones">
+            <button type="submit">Guardar paciente</button>
+            <a href="/turno/">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
