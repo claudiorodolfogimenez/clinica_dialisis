@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import dj_database_url
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 🔐 Seguridad
@@ -13,12 +14,16 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     ".railway.app",
+    ".ngrok-free.dev",
     "clinicadialisis-production.up.railway.app",
     "saludrenalsl.online",
     "www.saludrenalsl.online",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://unthread-sultry-dipping.ngrok-free.dev",
+    "https://*.ngrok-free.dev",
+    "https://*.ngrok-free.app",
     "https://clinicadialisis-production.up.railway.app",
     "https://saludrenalsl.online",
     "https://www.saludrenalsl.online",
@@ -72,12 +77,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# 🗄️ Base de datos
+
+
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')
+    "default": dj_database_url.config(
+        default="sqlite:///" + str(BASE_DIR / "db.sqlite3"),
+        conn_max_age=600,
+        ssl_require=False,
     )
 }
+
+
+
+
+
+
+
+
+
+
 
 # 🔒 Validación passwords
 AUTH_PASSWORD_VALIDATORS = [
