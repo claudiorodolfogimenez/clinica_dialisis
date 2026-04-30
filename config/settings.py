@@ -13,11 +13,13 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     ".railway.app",
+    "clinicadialisis-production.up.railway.app",
     "saludrenalsl.online",
     "www.saludrenalsl.online",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://clinicadialisis-production.up.railway.app",
     "https://saludrenalsl.online",
     "https://www.saludrenalsl.online",
 ]
