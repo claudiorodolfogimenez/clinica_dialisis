@@ -1,0 +1,1435 @@
+[
+{
+  "model": "pacientes.paciente",
+  "pk": 1,
+  "fields": {
+    "nombre": "Claudio",
+    "apellido": "Gimenez",
+    "dni": "23390597",
+    "fecha_nacimiento": null,
+    "telefono": "",
+    "direccion": "",
+    "obra_social": "",
+    "diagnostico": "",
+    "acceso_vascular": "",
+    "medico_tratante": "Vallejos",
+    "activo": true,
+    "observaciones": "",
+    "creado_en": "2026-04-15T16:03:37.540Z"
+  }
+},
+{
+  "model": "pacientes.paciente",
+  "pk": 2,
+  "fields": {
+    "nombre": "juan",
+    "apellido": "perez",
+    "dni": "20413768",
+    "fecha_nacimiento": null,
+    "telefono": "",
+    "direccion": "",
+    "obra_social": "osde",
+    "diagnostico": "",
+    "acceso_vascular": "",
+    "medico_tratante": "",
+    "activo": true,
+    "observaciones": "",
+    "creado_en": "2026-04-15T16:12:29.220Z"
+  }
+},
+{
+  "model": "pacientes.paciente",
+  "pk": 3,
+  "fields": {
+    "nombre": "sergio",
+    "apellido": "perez",
+    "dni": "27749788",
+    "fecha_nacimiento": null,
+    "telefono": "",
+    "direccion": "",
+    "obra_social": "osde",
+    "diagnostico": "",
+    "acceso_vascular": "",
+    "medico_tratante": "",
+    "activo": true,
+    "observaciones": "",
+    "creado_en": "2026-04-15T16:12:49.904Z"
+  }
+},
+{
+  "model": "pacientes.paciente",
+  "pk": 4,
+  "fields": {
+    "nombre": "Leo",
+    "apellido": "Messi",
+    "dni": "23212321",
+    "fecha_nacimiento": null,
+    "telefono": "",
+    "direccion": "",
+    "obra_social": "",
+    "diagnostico": "",
+    "acceso_vascular": "",
+    "medico_tratante": "",
+    "activo": true,
+    "observaciones": "",
+    "creado_en": "2026-04-29T16:42:48.742Z"
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 1,
+  "fields": {
+    "numero": 1,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 2,
+  "fields": {
+    "numero": 2,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 3,
+  "fields": {
+    "numero": 3,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 4,
+  "fields": {
+    "numero": 4,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 5,
+  "fields": {
+    "numero": 5,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 6,
+  "fields": {
+    "numero": 6,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 7,
+  "fields": {
+    "numero": 7,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 8,
+  "fields": {
+    "numero": 8,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 9,
+  "fields": {
+    "numero": 9,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 10,
+  "fields": {
+    "numero": 10,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 11,
+  "fields": {
+    "numero": 11,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.puesto",
+  "pk": 12,
+  "fields": {
+    "numero": 12,
+    "activo": true
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 1,
+  "fields": {
+    "paciente": 1,
+    "puesto": 2,
+    "fecha": "2026-04-15",
+    "turno": "manana",
+    "estado": "activa",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": false,
+    "creada_en": "2026-04-15T16:04:34.366Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 2,
+  "fields": {
+    "paciente": 2,
+    "puesto": 1,
+    "fecha": "2026-04-15",
+    "turno": "manana",
+    "estado": "pendiente",
+    "peso_pre": "78.50",
+    "peso_post": "76.80",
+    "ta_inicial": "110/70",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-15T16:15:04.257Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 3,
+  "fields": {
+    "paciente": 3,
+    "puesto": 2,
+    "fecha": "2026-04-15",
+    "turno": "manana",
+    "estado": "pendiente",
+    "peso_pre": "65.20",
+    "peso_post": "63.90",
+    "ta_inicial": "95/60",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-15T16:15:59.992Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 4,
+  "fields": {
+    "paciente": 2,
+    "puesto": 3,
+    "fecha": "2026-04-15",
+    "turno": "tarde",
+    "estado": "pendiente",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-15T16:32:33.428Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 5,
+  "fields": {
+    "paciente": 1,
+    "puesto": 3,
+    "fecha": "2026-04-15",
+    "turno": "manana",
+    "estado": "pendiente",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "Todo perfecto",
+    "finalizada": true,
+    "creada_en": "2026-04-15T16:32:40.667Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 6,
+  "fields": {
+    "paciente": 1,
+    "puesto": 1,
+    "fecha": "2026-04-17",
+    "turno": "manana",
+    "estado": "finalizada",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-17T14:33:03.868Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 7,
+  "fields": {
+    "paciente": 3,
+    "puesto": null,
+    "fecha": "2026-04-17",
+    "turno": "manana",
+    "estado": "activa",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": false,
+    "creada_en": "2026-04-17T14:33:18.768Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 8,
+  "fields": {
+    "paciente": 1,
+    "puesto": 1,
+    "fecha": "2026-04-25",
+    "turno": "manana",
+    "estado": "activa",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": false,
+    "creada_en": "2026-04-25T23:41:06.501Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 9,
+  "fields": {
+    "paciente": 1,
+    "puesto": 3,
+    "fecha": "2026-04-25",
+    "turno": "tarde",
+    "estado": "pendiente",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": false,
+    "creada_en": "2026-04-25T23:41:16.622Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 10,
+  "fields": {
+    "paciente": 3,
+    "puesto": null,
+    "fecha": "2026-04-25",
+    "turno": "manana",
+    "estado": "activa",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": false,
+    "creada_en": "2026-04-25T23:41:28.839Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 11,
+  "fields": {
+    "paciente": 1,
+    "puesto": 1,
+    "fecha": "2026-04-27",
+    "turno": "manana",
+    "estado": "activa",
+    "peso_pre": "78.50",
+    "peso_post": "76.60",
+    "ta_inicial": "190",
+    "ta_final": "120",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": false,
+    "creada_en": "2026-04-27T14:25:54.664Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 12,
+  "fields": {
+    "paciente": 1,
+    "puesto": 2,
+    "fecha": "2026-04-28",
+    "turno": "manana",
+    "estado": "finalizada",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-28T12:52:20.421Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 13,
+  "fields": {
+    "paciente": 2,
+    "puesto": 1,
+    "fecha": "2026-04-28",
+    "turno": "manana",
+    "estado": "finalizada",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-28T13:57:14.393Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 14,
+  "fields": {
+    "paciente": 2,
+    "puesto": null,
+    "fecha": "2026-04-28",
+    "turno": "manana",
+    "estado": "pendiente",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": false,
+    "creada_en": "2026-04-28T15:00:05.306Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 15,
+  "fields": {
+    "paciente": 2,
+    "puesto": 2,
+    "fecha": "2026-04-29",
+    "turno": "noche",
+    "estado": "finalizada",
+    "peso_pre": "12.00",
+    "peso_post": null,
+    "ta_inicial": "110/70",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-29T13:11:21.908Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 16,
+  "fields": {
+    "paciente": 1,
+    "puesto": 1,
+    "fecha": "2026-04-29",
+    "turno": "manana",
+    "estado": "finalizada",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-29T13:11:56.509Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 17,
+  "fields": {
+    "paciente": 2,
+    "puesto": 1,
+    "fecha": "2026-04-29",
+    "turno": "manana",
+    "estado": "pendiente",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-29T13:12:31.506Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 18,
+  "fields": {
+    "paciente": 2,
+    "puesto": 3,
+    "fecha": "2026-04-29",
+    "turno": "manana",
+    "estado": "finalizada",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "110/70",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-29T13:23:26.982Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 19,
+  "fields": {
+    "paciente": 3,
+    "puesto": 4,
+    "fecha": "2026-04-29",
+    "turno": "manana",
+    "estado": "finalizada",
+    "peso_pre": null,
+    "peso_post": null,
+    "ta_inicial": "",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-29T16:27:54.558Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 20,
+  "fields": {
+    "paciente": 4,
+    "puesto": 10,
+    "fecha": "2026-04-29",
+    "turno": "manana",
+    "estado": "finalizada",
+    "peso_pre": "56.00",
+    "peso_post": null,
+    "ta_inicial": "110/70",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-29T16:48:26.854Z"
+  }
+},
+{
+  "model": "sesiones.sesiondialisis",
+  "pk": 21,
+  "fields": {
+    "paciente": 4,
+    "puesto": 8,
+    "fecha": "2026-04-29",
+    "turno": "tarde",
+    "estado": "finalizada",
+    "peso_pre": "45.00",
+    "peso_post": null,
+    "ta_inicial": "110/70",
+    "ta_final": "",
+    "medicacion": "",
+    "incidencias": "",
+    "observaciones": "",
+    "finalizada": true,
+    "creada_en": "2026-04-29T19:32:14.170Z"
+  }
+},
+{
+  "model": "sesiones.planillahemodialisis",
+  "pk": 1,
+  "fields": {
+    "sesion": 12,
+    "acceso_vascular": "",
+    "dializador": "",
+    "concentrado": "",
+    "agujas": "",
+    "talla": "",
+    "peso_seco": null,
+    "td": "",
+    "qb": "",
+    "qd": "",
+    "na": "",
+    "peso_pre": null,
+    "peso_post": null,
+    "uf_prescripta": "",
+    "temperatura_inicial": "",
+    "frecuencia_cardiaca_inicial": "",
+    "ta_inicial": "",
+    "heparina_inicial": "",
+    "hora_inicio": "",
+    "temperatura_final": "",
+    "ta_egreso": "",
+    "frecuencia_cardiaca_final": "",
+    "uf_final": "",
+    "hora_fin": "",
+    "atb": "",
+    "observaciones": ""
+  }
+},
+{
+  "model": "sesiones.planillahemodialisis",
+  "pk": 2,
+  "fields": {
+    "sesion": 13,
+    "acceso_vascular": "",
+    "dializador": "",
+    "concentrado": "",
+    "agujas": "",
+    "talla": "",
+    "peso_seco": null,
+    "td": "",
+    "qb": "",
+    "qd": "",
+    "na": "",
+    "peso_pre": null,
+    "peso_post": null,
+    "uf_prescripta": "",
+    "temperatura_inicial": "",
+    "frecuencia_cardiaca_inicial": "",
+    "ta_inicial": "",
+    "heparina_inicial": "",
+    "hora_inicio": "",
+    "temperatura_final": "",
+    "ta_egreso": "",
+    "frecuencia_cardiaca_final": "",
+    "uf_final": "",
+    "hora_fin": "",
+    "atb": "",
+    "observaciones": ""
+  }
+},
+{
+  "model": "sesiones.planillahemodialisis",
+  "pk": 3,
+  "fields": {
+    "sesion": 15,
+    "acceso_vascular": "",
+    "dializador": "",
+    "concentrado": "",
+    "agujas": "",
+    "talla": "",
+    "peso_seco": null,
+    "td": "",
+    "qb": "",
+    "qd": "",
+    "na": "",
+    "peso_pre": "12.00",
+    "peso_post": null,
+    "uf_prescripta": "32",
+    "temperatura_inicial": "3",
+    "frecuencia_cardiaca_inicial": "2",
+    "ta_inicial": "110/70",
+    "heparina_inicial": "12",
+    "hora_inicio": "",
+    "temperatura_final": "",
+    "ta_egreso": "",
+    "frecuencia_cardiaca_final": "",
+    "uf_final": "",
+    "hora_fin": "",
+    "atb": "",
+    "observaciones": ""
+  }
+},
+{
+  "model": "sesiones.planillahemodialisis",
+  "pk": 4,
+  "fields": {
+    "sesion": 16,
+    "acceso_vascular": "",
+    "dializador": "",
+    "concentrado": "",
+    "agujas": "",
+    "talla": "",
+    "peso_seco": null,
+    "td": "",
+    "qb": "",
+    "qd": "",
+    "na": "",
+    "peso_pre": null,
+    "peso_post": null,
+    "uf_prescripta": "",
+    "temperatura_inicial": "",
+    "frecuencia_cardiaca_inicial": "",
+    "ta_inicial": "",
+    "heparina_inicial": "",
+    "hora_inicio": "",
+    "temperatura_final": "",
+    "ta_egreso": "",
+    "frecuencia_cardiaca_final": "",
+    "uf_final": "",
+    "hora_fin": "",
+    "atb": "",
+    "observaciones": ""
+  }
+},
+{
+  "model": "sesiones.planillahemodialisis",
+  "pk": 5,
+  "fields": {
+    "sesion": 18,
+    "acceso_vascular": "45",
+    "dializador": "23",
+    "concentrado": "4",
+    "agujas": "3",
+    "talla": "12",
+    "peso_seco": null,
+    "td": "12",
+    "qb": "2",
+    "qd": "3",
+    "na": "4",
+    "peso_pre": null,
+    "peso_post": null,
+    "uf_prescripta": "4",
+    "temperatura_inicial": "100",
+    "frecuencia_cardiaca_inicial": "123",
+    "ta_inicial": "110/70",
+    "heparina_inicial": "3",
+    "hora_inicio": "10:25",
+    "temperatura_final": "",
+    "ta_egreso": "",
+    "frecuencia_cardiaca_final": "",
+    "uf_final": "",
+    "hora_fin": "",
+    "atb": "",
+    "observaciones": ""
+  }
+},
+{
+  "model": "sesiones.planillahemodialisis",
+  "pk": 6,
+  "fields": {
+    "sesion": 19,
+    "acceso_vascular": "",
+    "dializador": "",
+    "concentrado": "",
+    "agujas": "",
+    "talla": "",
+    "peso_seco": null,
+    "td": "",
+    "qb": "",
+    "qd": "",
+    "na": "",
+    "peso_pre": null,
+    "peso_post": null,
+    "uf_prescripta": "",
+    "temperatura_inicial": "",
+    "frecuencia_cardiaca_inicial": "",
+    "ta_inicial": "",
+    "heparina_inicial": "",
+    "hora_inicio": "",
+    "temperatura_final": "",
+    "ta_egreso": "",
+    "frecuencia_cardiaca_final": "",
+    "uf_final": "",
+    "hora_fin": "",
+    "atb": "",
+    "observaciones": ""
+  }
+},
+{
+  "model": "sesiones.planillahemodialisis",
+  "pk": 7,
+  "fields": {
+    "sesion": 20,
+    "acceso_vascular": "",
+    "dializador": "",
+    "concentrado": "",
+    "agujas": "",
+    "talla": "",
+    "peso_seco": null,
+    "td": "",
+    "qb": "",
+    "qd": "",
+    "na": "",
+    "peso_pre": "56.00",
+    "peso_post": null,
+    "uf_prescripta": "10",
+    "temperatura_inicial": "78",
+    "frecuencia_cardiaca_inicial": "123",
+    "ta_inicial": "110/70",
+    "heparina_inicial": "1000",
+    "hora_inicio": "14:20",
+    "temperatura_final": "",
+    "ta_egreso": "",
+    "frecuencia_cardiaca_final": "",
+    "uf_final": "",
+    "hora_fin": "",
+    "atb": "",
+    "observaciones": ""
+  }
+},
+{
+  "model": "sesiones.planillahemodialisis",
+  "pk": 8,
+  "fields": {
+    "sesion": 21,
+    "acceso_vascular": "",
+    "dializador": "",
+    "concentrado": "",
+    "agujas": "",
+    "talla": "",
+    "peso_seco": null,
+    "td": "",
+    "qb": "",
+    "qd": "",
+    "na": "",
+    "peso_pre": "45.00",
+    "peso_post": null,
+    "uf_prescripta": "4",
+    "temperatura_inicial": "78",
+    "frecuencia_cardiaca_inicial": "123",
+    "ta_inicial": "110/70",
+    "heparina_inicial": "3",
+    "hora_inicio": "16:50",
+    "temperatura_final": "",
+    "ta_egreso": "",
+    "frecuencia_cardiaca_final": "",
+    "uf_final": "",
+    "hora_fin": "",
+    "atb": "",
+    "observaciones": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 1,
+  "fields": {
+    "planilla": 1,
+    "hora": 1,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 2,
+  "fields": {
+    "planilla": 1,
+    "hora": 2,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 3,
+  "fields": {
+    "planilla": 1,
+    "hora": 3,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 4,
+  "fields": {
+    "planilla": 1,
+    "hora": 4,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 5,
+  "fields": {
+    "planilla": 2,
+    "hora": 1,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 6,
+  "fields": {
+    "planilla": 2,
+    "hora": 2,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 7,
+  "fields": {
+    "planilla": 2,
+    "hora": 3,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 8,
+  "fields": {
+    "planilla": 2,
+    "hora": 4,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 9,
+  "fields": {
+    "planilla": 3,
+    "hora": 1,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 10,
+  "fields": {
+    "planilla": 3,
+    "hora": 2,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 11,
+  "fields": {
+    "planilla": 3,
+    "hora": 3,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 12,
+  "fields": {
+    "planilla": 3,
+    "hora": 4,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 13,
+  "fields": {
+    "planilla": 4,
+    "hora": 1,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 14,
+  "fields": {
+    "planilla": 4,
+    "hora": 2,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 15,
+  "fields": {
+    "planilla": 4,
+    "hora": 3,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 16,
+  "fields": {
+    "planilla": 4,
+    "hora": 4,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 17,
+  "fields": {
+    "planilla": 5,
+    "hora": 1,
+    "ta": "12",
+    "ultrafiltracion": "3",
+    "presion_venosa": "3",
+    "qb": "2",
+    "heparina_hora": "12",
+    "observacion": "22"
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 18,
+  "fields": {
+    "planilla": 5,
+    "hora": 2,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 19,
+  "fields": {
+    "planilla": 5,
+    "hora": 3,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 20,
+  "fields": {
+    "planilla": 5,
+    "hora": 4,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 21,
+  "fields": {
+    "planilla": 6,
+    "hora": 1,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 22,
+  "fields": {
+    "planilla": 6,
+    "hora": 2,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 23,
+  "fields": {
+    "planilla": 6,
+    "hora": 3,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 24,
+  "fields": {
+    "planilla": 6,
+    "hora": 4,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 25,
+  "fields": {
+    "planilla": 7,
+    "hora": 1,
+    "ta": "12",
+    "ultrafiltracion": "12",
+    "presion_venosa": "2",
+    "qb": "2",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 26,
+  "fields": {
+    "planilla": 7,
+    "hora": 2,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 27,
+  "fields": {
+    "planilla": 7,
+    "hora": 3,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 28,
+  "fields": {
+    "planilla": 7,
+    "hora": 4,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 29,
+  "fields": {
+    "planilla": 8,
+    "hora": 1,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 30,
+  "fields": {
+    "planilla": 8,
+    "hora": 2,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 31,
+  "fields": {
+    "planilla": 8,
+    "hora": 3,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "sesiones.controlhorariohemodialisis",
+  "pk": 32,
+  "fields": {
+    "planilla": 8,
+    "hora": 4,
+    "ta": "",
+    "ultrafiltracion": "",
+    "presion_venosa": "",
+    "qb": "",
+    "heparina_hora": "",
+    "observacion": ""
+  }
+},
+{
+  "model": "stock.insumo",
+  "pk": 1,
+  "fields": {
+    "nombre": "Filtro FX80",
+    "stock_actual": 10,
+    "stock_minimo": 20,
+    "unidad": "unidad",
+    "activo": true
+  }
+},
+{
+  "model": "stock.insumo",
+  "pk": 2,
+  "fields": {
+    "nombre": "Aguja 16gr",
+    "stock_actual": 50,
+    "stock_minimo": 30,
+    "unidad": "unidad",
+    "activo": true
+  }
+},
+{
+  "model": "stock.insumo",
+  "pk": 3,
+  "fields": {
+    "nombre": "Heparina 5%",
+    "stock_actual": 5,
+    "stock_minimo": 10,
+    "unidad": "frasco",
+    "activo": true
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 1,
+  "fields": {
+    "name": "Enfermeros",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 2,
+  "fields": {
+    "name": "Medicos",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 3,
+  "fields": {
+    "name": "Administracion",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$2kauxSOIyVF0KdT7FZYHTc$iXkhbljalMBTx9IP3MtyqSFa3adN7d95P+9OyD0sF0k=",
+    "last_login": "2026-04-30T01:38:12.638Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "claudio.gimenez.666@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-04-15T01:53:56Z",
+    "groups": [
+      3
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$V47KMEdiLBEHxGdKbnNh1i$rFZHsIgK6cqlMLMq9gGP8WxzHkCuoktqgu4jc9Ckkyk=",
+    "last_login": "2026-04-30T01:53:35.075Z",
+    "is_superuser": false,
+    "username": "enfermero1",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-15T17:49:46Z",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$7OLAoSEhDMXoQDIfAYaPkV$QDgMq3cPux/8nGE+Q4r8SG3EPBGCpQRV0pMdf16OXtc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "enfermero2",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-15T17:52:52Z",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$QLw0tLiBi5kvo6B6K7axT5$ZQIJ+hw5DvbcZ8AQH7BozHLHfCbIeS19WNvd8+DRxxM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "vallejos",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-04-15T17:53:20Z",
+    "groups": [
+      2
+    ],
+    "user_permissions": []
+  }
+}
+]
