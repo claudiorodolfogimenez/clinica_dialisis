@@ -103,6 +103,56 @@ th, td {
 th {
     background: #f8fafc;
 }
+
+.semaforo {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-weight: bold;
+}
+
+.luz {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.verde {
+    background: #16a34a;
+}
+
+.amarillo {
+    background: #f59e0b;
+}
+
+.rojo {
+    background: #dc2626;
+}
+
+.badge-rojo {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-weight: bold;
+}
+
+.badge-amarillo {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-weight: bold;
+}
+
+.badge-verde {
+    background: #dcfce7;
+    color: #166534;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-weight: bold;
+}
 </style>
 </head>
 
@@ -154,8 +204,71 @@ th {
 
         <div class="card">
             <h3>Stock en alerta</h3>
-            <div class="valor">{{ stock_alerta }}</div>
+
+            {% if stock_alerta == 0 %}
+                <div class="valor" style="color:#16a34a;">0</div>
+                <div class="semaforo">
+                    <span class="luz verde"></span> Stock normal
+                </div>
+            {% elif stock_alerta <= 2 %}
+                <div class="valor" style="color:#f59e0b;">{{ stock_alerta }}</div>
+                <div class="semaforo">
+                    <span class="luz amarillo"></span> Revisar stock
+                </div>
+            {% else %}
+                <div class="valor" style="color:#dc2626;">{{ stock_alerta }}</div>
+                <div class="semaforo">
+                    <span class="luz rojo"></span> Stock crítico
+                </div>
+            {% endif %}
         </div>
+    </div>
+
+    <div class="panel">
+        <h2>Semáforo de stock</h2>
+
+        <table>
+            <tr>
+                <th>Estado</th>
+                <th>Insumo</th>
+                <th>Stock actual</th>
+                <th>Observación</th>
+            </tr>
+
+            {% for insumo in insumos_alerta %}
+            <tr>
+                <td>
+                    {% if insumo.stock_actual <= 5 %}
+                        <span class="badge-rojo">Crítico</span>
+                    {% elif insumo.stock_actual <= 20 %}
+                        <span class="badge-amarillo">Alerta</span>
+                    {% else %}
+                        <span class="badge-verde">Normal</span>
+                    {% endif %}
+                </td>
+
+                <td>{{ insumo.nombre }}</td>
+                <td>{{ insumo.stock_actual }}</td>
+
+                <td>
+                    {% if insumo.stock_actual <= 5 %}
+                        Reponer urgente
+                    {% elif insumo.stock_actual <= 20 %}
+                        Revisar reposición
+                    {% else %}
+                        Stock suficiente
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">
+                    <span class="badge-verde">Stock normal</span>
+                    No hay insumos en alerta.
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 
     <div class="panel">
@@ -172,12 +285,12 @@ th {
 
             {% for s in ultimas_sesiones %}
             <tr>
-               <td>
-    {{ s.fecha }}
-    {% if s.planilla and s.planilla.hora_inicio %}
-        - {{ s.planilla.hora_inicio }}
-    {% endif %}
-</td>
+                <td>
+                    {{ s.fecha }}
+                    {% if s.planilla and s.planilla.hora_inicio %}
+                        - {{ s.planilla.hora_inicio }}
+                    {% endif %}
+                </td>
                 <td>{{ s.paciente }}</td>
                 <td>{{ s.get_turno_display }}</td>
                 <td>{{ s.puesto|default:"-" }}</td>

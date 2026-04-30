@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -10,7 +10,7 @@ from sesiones.models import (
     PlanillaHemodialisis,
     ControlHorarioHemodialisis,
 )
-from datetime import datetime
+
 try:
     from stock.models import Insumo
 except Exception:
@@ -30,20 +30,6 @@ def contexto_roles(request):
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @login_required
 def inicio(request):
     hoy = date.today()
@@ -54,23 +40,25 @@ def inicio(request):
     sesiones_pendientes = SesionDialisis.objects.filter(fecha=hoy, estado="pendiente", finalizada=False).count()
     sesiones_finalizadas = SesionDialisis.objects.filter(fecha=hoy, finalizada=True).count()
 
-    puestos_totales = Puesto.objects.filter(activo=True).count()
-
     stock_alerta = 0
-    if Insumo:
-        stock_alerta = Insumo.objects.filter(activo=True, stock_actual__lte=20).count()
+    insumos_alerta = []
 
-    # 🔥 CORRECTO Y SIN ERRORES DE INDENTACIÓN
+    if Insumo:
+        insumos_alerta = Insumo.objects.filter(
+            activo=True,
+            stock_actual__lte=20
+        ).order_by("stock_actual")
+        stock_alerta = insumos_alerta.count()
+
     ultimas_sesiones = list(
         SesionDialisis.objects.select_related("paciente", "puesto")
         .order_by("-fecha", "-id")[:8]
     )
 
-    # Vincular planilla
     for s in ultimas_sesiones:
         try:
             s.planilla = s.planillahemodialisis
-        except:
+        except Exception:
             s.planilla = None
 
     context = {
@@ -80,14 +68,15 @@ def inicio(request):
         "sesiones_activas": sesiones_activas,
         "sesiones_pendientes": sesiones_pendientes,
         "sesiones_finalizadas": sesiones_finalizadas,
-        "puestos_totales": puestos_totales,
         "stock_alerta": stock_alerta,
+        "insumos_alerta": insumos_alerta,
         "ultimas_sesiones": ultimas_sesiones,
     }
 
     context.update(contexto_roles(request))
 
     return render(request, "dashboard/inicio.html", context)
+
 
 @login_required
 def sala(request):
@@ -137,18 +126,29 @@ def turno(request):
         ).select_related("paciente", "puesto")
     )
 
-    # 🔥 ACÁ ESTÁ BIEN UBICADO
     for s in sesiones:
         try:
             s.planilla = s.planillahemodialisis
-        except:
+
+            if s.planilla.hora_inicio and s.planilla.hora_fin:
+                h_inicio = datetime.strptime(s.planilla.hora_inicio, "%H:%M")
+                h_fin = datetime.strptime(s.planilla.hora_fin, "%H:%M")
+                diferencia = h_fin - h_inicio
+                horas = diferencia.seconds // 3600
+                minutos = (diferencia.seconds % 3600) // 60
+                s.duracion = f"{horas}h {minutos}m"
+            else:
+                s.duracion = None
+
+        except Exception:
             s.planilla = None
+            s.duracion = None
 
     sesiones_pendientes = [s for s in sesiones if s.estado == "pendiente" and not s.finalizada]
     sesiones_activas = [s for s in sesiones if s.estado == "activa" and not s.finalizada]
     sesiones_finalizadas = [s for s in sesiones if s.finalizada]
 
-    return render(request, "dashboard/turno.html", {
+    context = {
         "hoy": hoy,
         "turno_actual": turno_actual,
         "pacientes": pacientes,
@@ -156,7 +156,11 @@ def turno(request):
         "sesiones_pendientes": sesiones_pendientes,
         "sesiones_activas": sesiones_activas,
         "sesiones_finalizadas": sesiones_finalizadas,
-    })
+    }
+
+    context.update(contexto_roles(request))
+
+    return render(request, "dashboard/turno.html", context)
 
 
 @login_required
