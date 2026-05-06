@@ -1,9 +1,11 @@
 from datetime import date, datetime
+from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from pacientes.models import Paciente
+
 from sesiones.models import (
     SesionDialisis,
     Puesto,
@@ -15,6 +17,13 @@ try:
     from stock.models import Insumo
 except Exception:
     Insumo = None
+
+
+def decimal_o_none(valor):
+    try:
+        return Decimal(valor.replace(",", ".")) if valor else None
+    except (InvalidOperation, AttributeError):
+        return None
 
 
 def usuario_en_grupo(user, nombre_grupo):
@@ -74,7 +83,6 @@ def inicio(request):
     }
 
     context.update(contexto_roles(request))
-
     return render(request, "dashboard/inicio.html", context)
 
 
@@ -102,6 +110,7 @@ def turno(request):
 
             if not sesion_existente:
                 puesto = None
+
                 if puesto_id:
                     puesto = Puesto.objects.filter(id=puesto_id).first()
 
@@ -144,9 +153,17 @@ def turno(request):
             s.planilla = None
             s.duracion = None
 
-    sesiones_pendientes = [s for s in sesiones if s.estado == "pendiente" and not s.finalizada]
-    sesiones_activas = [s for s in sesiones if s.estado == "activa" and not s.finalizada]
-    sesiones_finalizadas = [s for s in sesiones if s.finalizada]
+    sesiones_pendientes = [
+        s for s in sesiones if s.estado == "pendiente" and not s.finalizada
+    ]
+
+    sesiones_activas = [
+        s for s in sesiones if s.estado == "activa" and not s.finalizada
+    ]
+
+    sesiones_finalizadas = [
+        s for s in sesiones if s.finalizada
+    ]
 
     context = {
         "hoy": hoy,
@@ -159,7 +176,6 @@ def turno(request):
     }
 
     context.update(contexto_roles(request))
-
     return render(request, "dashboard/turno.html", context)
 
 
@@ -187,34 +203,23 @@ def finalizar_sesion(request, sesion_id):
 def editar_signos(request, sesion_id):
     sesion = get_object_or_404(SesionDialisis, id=sesion_id)
 
-    planilla, created = PlanillaHemodialisis.objects.get_or_create(sesion=sesion)
+    planilla, _ = PlanillaHemodialisis.objects.get_or_create(sesion=sesion)
 
-    for hora in range(1, 5):
-        ControlHorarioHemodialisis.objects.get_or_create(
+    controles = []
+    for i in range(1, 5):
+        control, _ = ControlHorarioHemodialisis.objects.get_or_create(
             planilla=planilla,
-            hora=hora
+            hora=i
         )
-
-    controles = planilla.controles.all().order_by("hora")
-
-    def decimal_or_none(valor):
-        if not valor:
-            return None
-        return valor.replace(",", ".")
+        controles.append(control)
 
     if request.method == "POST":
-        planilla.acceso_vascular = request.POST.get("acceso_vascular", "")
-        planilla.dializador = request.POST.get("dializador", "")
-        planilla.concentrado = request.POST.get("concentrado", "")
-        planilla.agujas = request.POST.get("agujas", "")
-        planilla.talla = request.POST.get("talla", "")
-        planilla.peso_seco = decimal_or_none(request.POST.get("peso_seco"))
-        planilla.td = request.POST.get("td", "")
-        planilla.qb = request.POST.get("qb", "")
-        planilla.qd = request.POST.get("qd", "")
-        planilla.na = request.POST.get("na", "")
+        # Parámetros iniciales
+        peso_pre = decimal_o_none(request.POST.get("peso_pre"))
 
-        planilla.peso_pre = decimal_or_none(request.POST.get("peso_pre"))
+        planilla.peso_pre = peso_pre
+        sesion.peso_pre = peso_pre
+
         planilla.uf_prescripta = request.POST.get("uf_prescripta", "")
         planilla.temperatura_inicial = request.POST.get("temperatura_inicial", "")
         planilla.frecuencia_cardiaca_inicial = request.POST.get("frecuencia_cardiaca_inicial", "")
@@ -222,7 +227,42 @@ def editar_signos(request, sesion_id):
         planilla.heparina_inicial = request.POST.get("heparina_inicial", "")
         planilla.hora_inicio = request.POST.get("hora_inicio", "")
 
-        planilla.peso_post = decimal_or_none(request.POST.get("peso_post"))
+        # También guardo algunos datos básicos en la sesión
+        sesion.ta_inicial = request.POST.get("ta_inicial", "")
+
+        # Datos generales
+        planilla.acceso_vascular = request.POST.get("acceso_vascular", "")
+        planilla.dializador = request.POST.get("dializador", "")
+        planilla.concentrado = request.POST.get("concentrado", "")
+        planilla.agujas = request.POST.get("agujas", "")
+        planilla.talla = request.POST.get("talla", "")
+        planilla.peso_seco = decimal_o_none(request.POST.get("peso_seco"))
+        planilla.td = request.POST.get("td", "")
+        planilla.qb = request.POST.get("qb", "")
+        planilla.qd = request.POST.get("qd", "")
+        planilla.na = request.POST.get("na", "")
+
+        # Controles por hora
+        for i in range(1, 5):
+            control, _ = ControlHorarioHemodialisis.objects.get_or_create(
+                planilla=planilla,
+                hora=i
+            )
+
+            control.ta = request.POST.get(f"control_{i}_ta", "")
+            control.ultrafiltracion = request.POST.get(f"control_{i}_uf", "")
+            control.presion_venosa = request.POST.get(f"control_{i}_pv", "")
+            control.qb = request.POST.get(f"control_{i}_qb", "")
+            control.heparina_hora = request.POST.get(f"control_{i}_heparina", "")
+            control.observacion = request.POST.get(f"control_{i}_observacion", "")
+            control.save()
+
+        # Parámetros finales
+        peso_post = decimal_o_none(request.POST.get("peso_post"))
+
+        planilla.peso_post = peso_post
+        sesion.peso_post = peso_post
+
         planilla.temperatura_final = request.POST.get("temperatura_final", "")
         planilla.ta_egreso = request.POST.get("ta_egreso", "")
         planilla.frecuencia_cardiaca_final = request.POST.get("frecuencia_cardiaca_final", "")
@@ -231,25 +271,13 @@ def editar_signos(request, sesion_id):
         planilla.atb = request.POST.get("atb", "")
         planilla.observaciones = request.POST.get("observaciones", "")
 
+        sesion.ta_final = request.POST.get("ta_egreso", "")
+        sesion.observaciones = request.POST.get("observaciones", "")
+
+        sesion.save()
         planilla.save()
 
-        sesion.ta_inicial = planilla.ta_inicial
-        sesion.ta_final = planilla.ta_egreso
-        sesion.peso_pre = planilla.peso_pre
-        sesion.peso_post = planilla.peso_post
-        sesion.observaciones = planilla.observaciones
-        sesion.save()
-
-        for control in controles:
-            control.ta = request.POST.get(f"control_{control.hora}_ta", "")
-            control.ultrafiltracion = request.POST.get(f"control_{control.hora}_uf", "")
-            control.presion_venosa = request.POST.get(f"control_{control.hora}_pv", "")
-            control.qb = request.POST.get(f"control_{control.hora}_qb", "")
-            control.heparina_hora = request.POST.get(f"control_{control.hora}_heparina", "")
-            control.observacion = request.POST.get(f"control_{control.hora}_observacion", "")
-            control.save()
-
-        return redirect(f"/turno/?turno={sesion.turno}")
+        return redirect("editar_signos", sesion_id=sesion.id)
 
     return render(request, "dashboard/editar_signos.html", {
         "sesion": sesion,

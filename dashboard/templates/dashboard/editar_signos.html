@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Planilla HD</title>
+    <title>Datos Paciente en Sesion </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
@@ -33,6 +33,13 @@
             margin: 22px auto;
             padding: 0 20px;
         }
+
+        .hora-control {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 4px;
+    font-weight: bold;
+}
 
         .paciente-box {
             background: white;
@@ -68,6 +75,33 @@
         .chip-blue {
             background: #dbeafe;
             color: #1d4ed8;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            border: none;
+            padding: 12px 18px;
+            border-radius: 999px;
+            background: white;
+            color: #0f4c81;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .tab-btn.active {
+            background: #0f4c81;
+            color: white;
+        }
+
+        .hoja-tab.oculto {
+            display: none;
         }
 
         .card {
@@ -193,6 +227,50 @@
             color: #64748b;
             font-weight: bold;
         }
+
+        .alarma-box {
+            display: none;
+            background: #fff3cd;
+            border: 2px solid #f59e0b;
+            color: #92400e;
+            padding: 15px;
+            border-radius: 14px;
+            margin-bottom: 18px;
+            font-weight: bold;
+            box-shadow: 0 3px 12px rgba(245, 158, 11, 0.25);
+        }
+
+        .alarma-box.activa {
+            display: block;
+        }
+
+        .alarma-box strong {
+            font-size: 18px;
+        }
+
+        .control-alerta {
+            background: #fff7ed;
+        }
+
+        .control-completo {
+            background: #ecfdf5;
+        }
+
+        .badge-alerta {
+            background: #dc2626;
+            color: white;
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            display: inline-block;
+            margin-left: 6px;
+        }
+
+        .mini-ayuda {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 8px;
+        }
     </style>
 </head>
 
@@ -215,225 +293,294 @@
             <span class="chip">Turno: {{ sesion.get_turno_display }}</span>
             <span class="chip">{{ sesion.puesto|default:"Sin puesto" }}</span>
             <span class="chip">Estado: {{ sesion.get_estado_display }}</span>
+            <span class="chip">Inicio: {{ planilla.hora_inicio|default:"Sin cargar" }}</span>
         </div>
     </div>
 
-    <div class="card">
-        <div class="section-title">
-            <h2>Datos generales</h2>
-            <span class="ayuda">Información técnica del tratamiento</span>
-        </div>
-
-        <div class="grid">
-            <div>
-                <label>Acceso vascular</label>
-                <input name="acceso_vascular" value="{{ planilla.acceso_vascular }}">
-            </div>
-
-            <div>
-                <label>Dializador</label>
-                <input name="dializador" value="{{ planilla.dializador }}">
-            </div>
-
-            <div>
-                <label>Concentrado</label>
-                <input name="concentrado" value="{{ planilla.concentrado }}">
-            </div>
-
-            <div>
-                <label>Agujas</label>
-                <input name="agujas" value="{{ planilla.agujas }}">
-            </div>
-
-            <div>
-                <label>Talla</label>
-                <input name="talla" value="{{ planilla.talla }}">
-            </div>
-
-            <div>
-                <label>Peso seco</label>
-                <input type="number" step="0.01" name="peso_seco" value="{{ planilla.peso_seco|default:'' }}">
-            </div>
-
-            <div>
-                <label>TD</label>
-                <input name="td" value="{{ planilla.td }}">
-            </div>
-
-            <div>
-                <label>QB</label>
-                <input name="qb" value="{{ planilla.qb }}">
-            </div>
-
-            <div>
-                <label>QD</label>
-                <input name="qd" value="{{ planilla.qd }}">
-            </div>
-
-            <div>
-                <label>Na</label>
-                <input name="na" value="{{ planilla.na }}">
-            </div>
-        </div>
+    <div id="alarmaBox" class="alarma-box">
+        <strong>🔔 Atención:</strong>
+        <span id="alarmaTexto"></span>
+        <button type="button" class="btn" onclick="mostrarHoja('controles')">
+            Cargar control ahora
+        </button>
     </div>
 
-    <div class="card">
-        <div class="section-title">
-            <h2>Parámetros iniciales</h2>
-            <span class="ayuda">Carga al conectar al paciente</span>
-        </div>
+    <div class="tabs">
+        <button type="button" class="tab-btn active" data-tab="inicial" onclick="mostrarHoja('inicial')">
+            1. Parámetros iniciales
+        </button>
 
-        <div class="grid">
-            <div>
-                <label>Peso pre</label>
-                <input type="number" step="0.01" name="peso_pre" value="{{ planilla.peso_pre|default:'' }}">
-            </div>
+        <button type="button" class="tab-btn" data-tab="generales" onclick="mostrarHoja('generales')">
+            2. Datos generales
+        </button>
 
-            <div>
-                <label>UF prescripta</label>
-                <input name="uf_prescripta" value="{{ planilla.uf_prescripta }}">
-            </div>
+        <button type="button" class="tab-btn" data-tab="controles" onclick="mostrarHoja('controles')">
+            3. Controles por hora
+        </button>
 
-            <div>
-                <label>Temperatura</label>
-                <input name="temperatura_inicial" value="{{ planilla.temperatura_inicial }}">
-            </div>
-
-            <div>
-                <label>Frecuencia cardíaca</label>
-                <input name="frecuencia_cardiaca_inicial" value="{{ planilla.frecuencia_cardiaca_inicial }}">
-            </div>
-
-            <div>
-                <label>TA inicial</label>
-                <input name="ta_inicial" value="{{ planilla.ta_inicial }}" placeholder="Ej: 120/80">
-            </div>
-
-            <div>
-                <label>Heparina inicial</label>
-                <input name="heparina_inicial" value="{{ planilla.heparina_inicial }}">
-            </div>
-
-            <div>
-                <label>Hora inicio</label>
-                <input name="hora_inicio" value="{{ planilla.hora_inicio }}" placeholder="Ej: 08:15">
-            </div>
-        </div>
+        <button type="button" class="tab-btn" data-tab="finales" onclick="mostrarHoja('finales')">
+            4. Finalización
+        </button>
     </div>
 
-    <div class="card">
-    <h2>Controles por hora</h2>
+    <div id="hoja-inicial" class="hoja-tab">
+        <div class="card">
+            <div class="section-title">
+                <h2>Parámetros iniciales</h2>
+                <span class="ayuda">Carga al conectar al paciente</span>
+            </div>
 
-    <div style="overflow-x:auto;">
-        <table style="width:100%; min-width:900px; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Hora</th>
-                    <th>TA</th>
-                    <th>UF</th>
-                    <th>P. Venosa</th>
-                    <th>QB</th>
-                    <th>Heparina hora</th>
-                    <th>Observación</th>
-                </tr>
-            </thead>
+            <div class="grid">
+            
 
-            <tbody>
-                {% for control in controles %}
-                <tr>
-                    <td><strong>{{ control.hora }}ª hora</strong></td>
 
-                    <td>
-                        <input name="control_{{ control.hora }}_ta"
-                               value="{{ control.ta }}"
-                               placeholder="Ej: 110/70">
-                    </td>
-
-                    <td>
-                        <input name="control_{{ control.hora }}_uf"
-                               value="{{ control.ultrafiltracion }}">
-                    </td>
-
-                    <td>
-                        <input name="control_{{ control.hora }}_pv"
-                               value="{{ control.presion_venosa }}">
-                    </td>
-
-                    <td>
-                        <input name="control_{{ control.hora }}_qb"
-                               value="{{ control.qb }}">
-                    </td>
-
-                    <td>
-                        <input name="control_{{ control.hora }}_heparina"
-                               value="{{ control.heparina_hora }}">
-                    </td>
-
-                    <td>
-                        <input name="control_{{ control.hora }}_observacion"
-                               value="{{ control.observacion }}">
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7">No hay controles cargados</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div>
+    <label>Peso pre</label>
+    <input 
+        type="number" 
+        step="0.01" 
+        name="peso_pre"
+        id="peso_pre"
+        value="{% if planilla.peso_pre %}{{ planilla.peso_pre|stringformat:'g' }}{% elif sesion.peso_pre %}{{ sesion.peso_pre|stringformat:'g' }}{% endif %}"
+        placeholder="Ej: 67"
+    >
 </div>
-    <div class="card">
-        <div class="section-title">
-            <h2>Parámetros finales</h2>
-            <span class="ayuda">Carga al desconectar al paciente</span>
+
+
+
+
+
+
+
+
+
+
+
+                <div>
+                    <label>UF prescripta</label>
+                    <input name="uf_prescripta" value="{{ planilla.uf_prescripta }}">
+                </div>
+
+                <div>
+                    <label>Temperatura</label>
+                    <input name="temperatura_inicial" value="{{ planilla.temperatura_inicial }}">
+                </div>
+
+                <div>
+                    <label>Frecuencia cardíaca</label>
+                    <input name="frecuencia_cardiaca_inicial" value="{{ planilla.frecuencia_cardiaca_inicial }}">
+                </div>
+
+                <div>
+                    <label>TA inicial</label>
+                    <input name="ta_inicial" value="{{ planilla.ta_inicial }}" placeholder="Ej: 120/80">
+                </div>
+
+                <div>
+                    <label>Heparina inicial</label>
+                    <input name="heparina_inicial" value="{{ planilla.heparina_inicial }}">
+                </div>
+
+                <div>
+                    <label>Hora inicio</label>
+                    <input id="horaInicioInput" name="hora_inicio" value="{{ planilla.hora_inicio }}" placeholder="Ej: 08:15">
+                    <div class="mini-ayuda">Usar formato 24 hs. Ejemplo: 08:15 o 14:30.</div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div class="grid">
-            <div>
-                <label>Peso post</label>
-                <input type="number" step="0.01" name="peso_post" value="{{ planilla.peso_post|default:'' }}">
+    <div id="hoja-generales" class="hoja-tab oculto">
+        <div class="card">
+            <div class="section-title">
+                <h2>Datos generales</h2>
+                <span class="ayuda">Información técnica del tratamiento</span>
             </div>
 
-            <div>
-                <label>Temperatura final</label>
-                <input name="temperatura_final" value="{{ planilla.temperatura_final }}">
-            </div>
+            <div class="grid">
+                <div>
+                    <label>Acceso vascular</label>
+                    <input name="acceso_vascular" value="{{ planilla.acceso_vascular }}">
+                </div>
 
-            <div>
-                <label>TA de egreso</label>
-                <input name="ta_egreso" value="{{ planilla.ta_egreso }}" placeholder="Ej: 100/60">
-            </div>
+                <div>
+                    <label>Dializador</label>
+                    <input name="dializador" value="{{ planilla.dializador }}">
+                </div>
 
-            <div>
-                <label>Frecuencia cardíaca final</label>
-                <input name="frecuencia_cardiaca_final" value="{{ planilla.frecuencia_cardiaca_final }}">
-            </div>
+                <div>
+                    <label>Concentrado</label>
+                    <input name="concentrado" value="{{ planilla.concentrado }}">
+                </div>
 
-            <div>
-                <label>UF final</label>
-                <input name="uf_final" value="{{ planilla.uf_final }}">
-            </div>
+                <div>
+                    <label>Agujas</label>
+                    <input name="agujas" value="{{ planilla.agujas }}">
+                </div>
 
-            <div>
-                <label>Hora fin</label>
-                <input name="hora_fin" value="{{ planilla.hora_fin }}" placeholder="Ej: 12:15">
-            </div>
+                <div>
+                    <label>Talla</label>
+                    <input name="talla" value="{{ planilla.talla }}">
+                </div>
 
-            <div>
-                <label>ATB</label>
-                <input name="atb" value="{{ planilla.atb }}">
+                <div>
+                    <label>Peso seco</label>
+                    <input type="number" step="0.01" name="peso_seco" value="{{ planilla.peso_seco|default:'' }}">
+                </div>
+
+                <div>
+                    <label>TD</label>
+                    <input name="td" value="{{ planilla.td }}">
+                </div>
+
+                <div>
+                    <label>QB</label>
+                    <input name="qb" value="{{ planilla.qb }}">
+                </div>
+
+                <div>
+                    <label>QD</label>
+                    <input name="qd" value="{{ planilla.qd }}">
+                </div>
+
+                <div>
+                    <label>Na</label>
+                    <input name="na" value="{{ planilla.na }}">
+                </div>
             </div>
         </div>
+    </div>
 
-        <div style="margin-top:15px;">
-            <label>Observaciones</label>
-            <textarea name="observaciones">{{ planilla.observaciones }}</textarea>
+    <div id="hoja-controles" class="hoja-tab oculto">
+        <div class="card">
+            <div class="section-title">
+                <h2>Controles por hora</h2>
+                <span class="ayuda">Alertas automáticas cada 1 hora durante 4 horas</span>
+            </div>
+
+            <div class="tabla-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>TA</th>
+                            <th>UF</th>
+                            <th>P. Venosa</th>
+                            <th>QB</th>
+                            <th>Heparina hora</th>
+                            <th>Observación</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for control in controles %}
+                        <tr id="fila-control-{{ control.hora }}">
+                          <td>
+    <strong>{{ control.hora }}ª hora</strong>
+    <div class="hora-control" id="hora-control-{{ control.hora }}">--:--</div>
+    <span id="badge-control-{{ control.hora }}"></span>
+</td>
+
+                            <td>
+                                <input id="control_{{ control.hora }}_ta"
+                                       name="control_{{ control.hora }}_ta"
+                                       value="{{ control.ta }}"
+                                       placeholder="Ej: 110/70">
+                            </td>
+
+                            <td>
+                                <input name="control_{{ control.hora }}_uf"
+                                       value="{{ control.ultrafiltracion }}">
+                            </td>
+
+                            <td>
+                                <input name="control_{{ control.hora }}_pv"
+                                       value="{{ control.presion_venosa }}">
+                            </td>
+
+                            <td>
+                                <input name="control_{{ control.hora }}_qb"
+                                       value="{{ control.qb }}">
+                            </td>
+
+                            <td>
+                                <input name="control_{{ control.hora }}_heparina"
+                                       value="{{ control.heparina_hora }}">
+                            </td>
+
+                            <td>
+                                <input name="control_{{ control.hora }}_observacion"
+                                       value="{{ control.observacion }}">
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7">No hay controles cargados</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mini-ayuda">
+                La alarma se calcula desde la hora de inicio cargada en la primera pestaña.
+            </div>
+        </div>
+    </div>
+
+    <div id="hoja-finales" class="hoja-tab oculto">
+        <div class="card">
+            <div class="section-title">
+                <h2>Parámetros finales</h2>
+                <span class="ayuda">Carga al desconectar al paciente</span>
+            </div>
+
+            <div class="grid">
+                <div>
+                    <label>Peso post</label>
+                    <input type="number" step="0.01" name="peso_post" value="{{ planilla.peso_post|default:'' }}">
+                </div>
+
+                <div>
+                    <label>Temperatura final</label>
+                    <input name="temperatura_final" value="{{ planilla.temperatura_final }}">
+                </div>
+
+                <div>
+                    <label>TA de egreso</label>
+                    <input name="ta_egreso" value="{{ planilla.ta_egreso }}" placeholder="Ej: 100/60">
+                </div>
+
+                <div>
+                    <label>Frecuencia cardíaca final</label>
+                    <input name="frecuencia_cardiaca_final" value="{{ planilla.frecuencia_cardiaca_final }}">
+                </div>
+
+                <div>
+                    <label>UF final</label>
+                    <input name="uf_final" value="{{ planilla.uf_final }}">
+                </div>
+
+                <div>
+                    <label>Hora fin</label>
+                    <input name="hora_fin" value="{{ planilla.hora_fin }}" placeholder="Ej: 12:15">
+                </div>
+
+                <div>
+                    <label>ATB</label>
+                    <input name="atb" value="{{ planilla.atb }}">
+                </div>
+            </div>
+
+            <div style="margin-top:15px;">
+                <label>Observaciones</label>
+                <textarea name="observaciones">{{ planilla.observaciones }}</textarea>
+            </div>
         </div>
     </div>
 
     <div class="acciones">
-        <button type="submit" class="btn">Guardar planilla HD</button>
+      <button type="submit" class="btn">💾 Guardar cambios</button>
         <a href="/turno/?turno={{ sesion.turno }}" class="btn btn-sec">Volver al turno</a>
         {% if not sesion.finalizada %}
             <a href="{% url 'finalizar_sesion' sesion.id %}" class="btn btn-danger">Finalizar sesión</a>
@@ -443,6 +590,172 @@
 </form>
 
 </div>
+
+<script>
+    let alarmasDisparadas = {};
+
+function actualizarHorasControles() {
+    const inicio = obtenerHoraInicio();
+    if (!inicio) return;
+
+    for (let hora = 1; hora <= 4; hora++) {
+        const momentoControl = new Date(inicio.getTime() + (hora * 60 * 60 * 1000));
+        const hh = String(momentoControl.getHours()).padStart(2, "0");
+        const mm = String(momentoControl.getMinutes()).padStart(2, "0");
+
+        const label = document.getElementById("hora-control-" + hora);
+        if (label) {
+            label.textContent = hh + ":" + mm;
+        }
+    }
+}
+
+
+
+
+    function mostrarHoja(nombre) {
+        document.querySelectorAll('.hoja-tab').forEach(function(hoja) {
+            hoja.classList.add('oculto');
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+
+        document.getElementById('hoja-' + nombre).classList.remove('oculto');
+
+        const boton = document.querySelector('.tab-btn[data-tab="' + nombre + '"]');
+        if (boton) {
+            boton.classList.add('active');
+        }
+    }
+
+    function reproducirAlarma() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.35);
+        } catch (e) {
+            console.log("El navegador bloqueó el sonido de la alarma.");
+        }
+    }
+
+    function obtenerHoraInicio() {
+        const input = document.getElementById("horaInicioInput");
+        if (!input || !input.value) return null;
+
+        const partes = input.value.trim().split(":");
+        if (partes.length < 2) return null;
+
+        const horas = parseInt(partes[0], 10);
+        const minutos = parseInt(partes[1], 10);
+
+        if (isNaN(horas) || isNaN(minutos)) return null;
+
+        const inicio = new Date();
+        inicio.setHours(horas, minutos, 0, 0);
+        return inicio;
+    }
+
+    function controlTieneDatos(hora) {
+        const ta = document.getElementById("control_" + hora + "_ta");
+        return ta && ta.value.trim() !== "";
+    }
+
+    function marcarFilaControl(hora, estado) {
+        const fila = document.getElementById("fila-control-" + hora);
+        const badge = document.getElementById("badge-control-" + hora);
+
+        if (!fila || !badge) return;
+
+        fila.classList.remove("control-alerta", "control-completo");
+        badge.innerHTML = "";
+
+        if (estado === "pendiente") {
+            fila.classList.add("control-alerta");
+            badge.innerHTML = '<span class="badge-alerta">Cargar</span>';
+        }
+
+        if (estado === "completo") {
+            fila.classList.add("control-completo");
+        }
+    }
+
+    function revisarAlarmas() {
+        const inicio = obtenerHoraInicio();
+        const alarmaBox = document.getElementById("alarmaBox");
+        const alarmaTexto = document.getElementById("alarmaTexto");
+
+        if (!inicio) {
+            alarmaBox.classList.remove("activa");
+            return;
+        }
+
+        const ahora = new Date();
+        let mensajeActivo = "";
+
+        for (let hora = 1; hora <= 4; hora++) {
+            const momentoControl = new Date(inicio.getTime() + (hora * 60 * 60 * 1000));
+
+            if (ahora >= momentoControl && !controlTieneDatos(hora)) {
+                marcarFilaControl(hora, "pendiente");
+
+                mensajeActivo = " corresponde cargar el control de la " + hora + "ª hora.";
+
+                if (!alarmasDisparadas[hora]) {
+                    alarmasDisparadas[hora] = true;
+                    reproducirAlarma();
+                    mostrarHoja("controles");
+                }
+            } else if (controlTieneDatos(hora)) {
+                marcarFilaControl(hora, "completo");
+            }
+        }
+
+        if (mensajeActivo) {
+            alarmaTexto.textContent = mensajeActivo;
+            alarmaBox.classList.add("activa");
+        } else {
+            alarmaBox.classList.remove("activa");
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      
+
+
+actualizarHorasControles();
+revisarAlarmas();
+
+setInterval(function() {
+    actualizarHorasControles();
+    revisarAlarmas();
+}, 60000);
+
+
+        document.querySelectorAll("input").forEach(function(input) {
+       input.addEventListener("change", function() {
+    actualizarHorasControles();
+    revisarAlarmas();
+});
+
+input.addEventListener("keyup", function() {
+    actualizarHorasControles();
+    revisarAlarmas();
+});
+        });
+    });
+</script>
 
 </body>
 </html>
