@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Datos Paciente en Sesion </title>
+    <title>Planilla de Hemodiálisis</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
@@ -12,6 +12,13 @@
             margin: 0;
             color: #1f2937;
         }
+
+        .hora-control {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 5px;
+    font-weight: bold;
+}
 
         .header {
             background: #0f4c81;
@@ -23,29 +30,17 @@
             margin: 0 0 6px 0;
         }
 
-        .header .sub {
-            font-size: 15px;
-            opacity: 0.95;
-        }
-
         .container {
             max-width: 1350px;
             margin: 22px auto;
             padding: 0 20px;
         }
 
-        .hora-control {
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 4px;
-    font-weight: bold;
-}
-
         .paciente-box {
             background: white;
             border-radius: 16px;
             padding: 18px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .08);
             margin-bottom: 18px;
             border-left: 8px solid #0f4c81;
         }
@@ -92,7 +87,7 @@
             color: #0f4c81;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
         }
 
         .tab-btn.active {
@@ -108,7 +103,7 @@
             background: white;
             border-radius: 16px;
             padding: 18px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .08);
             margin-bottom: 18px;
         }
 
@@ -132,7 +127,8 @@
             color: #374151;
         }
 
-        input, textarea {
+        input,
+        textarea {
             width: 100%;
             padding: 11px;
             border: 1px solid #cbd5e1;
@@ -142,14 +138,15 @@
             background: #f8fafc;
         }
 
-        input:focus, textarea:focus {
+        input:focus,
+        textarea:focus {
             outline: none;
             border-color: #0f4c81;
             background: white;
         }
 
         textarea {
-            min-height: 90px;
+            min-height: 95px;
             resize: vertical;
         }
 
@@ -164,7 +161,8 @@
             margin-top: 8px;
         }
 
-        th, td {
+        th,
+        td {
             border-bottom: 1px solid #e5e7eb;
             padding: 8px;
             text-align: left;
@@ -186,7 +184,7 @@
         .acciones {
             position: sticky;
             bottom: 0;
-            background: rgba(238,243,248,0.96);
+            background: rgba(238, 243, 248, .96);
             padding: 14px 0;
             display: flex;
             gap: 10px;
@@ -237,39 +235,51 @@
             border-radius: 14px;
             margin-bottom: 18px;
             font-weight: bold;
-            box-shadow: 0 3px 12px rgba(245, 158, 11, 0.25);
+            box-shadow: 0 3px 12px rgba(245, 158, 11, .25);
         }
 
         .alarma-box.activa {
             display: block;
         }
 
-        .alarma-box strong {
-            font-size: 18px;
-        }
-
-        .control-alerta {
-            background: #fff7ed;
-        }
-
-        .control-completo {
-            background: #ecfdf5;
-        }
-
-        .badge-alerta {
-            background: #dc2626;
-            color: white;
-            padding: 4px 9px;
-            border-radius: 999px;
-            font-size: 12px;
-            display: inline-block;
-            margin-left: 6px;
-        }
-
-        .mini-ayuda {
+        .solo-lectura {
+            background: #f1f5f9;
             color: #64748b;
-            font-size: 13px;
-            margin-top: 8px;
+        }
+
+        .obs-medica {
+            border-left: 6px solid #7c3aed;
+        }
+
+        .obs-enfermeria {
+            border-left: 6px solid #0f4c81;
+        }
+
+        @media(max-width:768px) {
+            .container {
+                padding: 0 12px;
+            }
+
+            .header {
+                padding: 16px;
+            }
+
+            .tabs {
+                gap: 7px;
+            }
+
+            .tab-btn {
+                font-size: 13px;
+                padding: 10px 12px;
+            }
+
+            table {
+                min-width: 760px;
+            }
+
+            .acciones {
+                position: static;
+            }
         }
     </style>
 </head>
@@ -278,7 +288,7 @@
 
 <div class="header">
     <h1>Planilla de Hemodiálisis</h1>
-    <div class="sub">Carga durante la sesión del paciente</div>
+    <div>Carga durante la sesión del paciente</div>
 </div>
 
 <div class="container">
@@ -288,12 +298,15 @@
 
     <div class="paciente-box">
         <div class="paciente-nombre">{{ sesion.paciente }}</div>
+
         <div class="chips">
             <span class="chip chip-blue">{{ sesion.fecha }}</span>
             <span class="chip">Turno: {{ sesion.get_turno_display }}</span>
             <span class="chip">{{ sesion.puesto|default:"Sin puesto" }}</span>
             <span class="chip">Estado: {{ sesion.get_estado_display }}</span>
             <span class="chip">Inicio: {{ planilla.hora_inicio|default:"Sin cargar" }}</span>
+            <span class="chip">Médico: {{ sesion.medico_asignado|default:"Sin asignar" }}</span>
+            <span class="chip">Enfermero: {{ sesion.enfermero_asignado|default:"Sin asignar" }}</span>
         </div>
     </div>
 
@@ -330,31 +343,33 @@
                 <span class="ayuda">Carga al conectar al paciente</span>
             </div>
 
-            <div class="grid">
-            
-
 
 <div>
-    <label>Peso pre</label>
+    <label>Último peso anterior</label>
     <input 
-        type="number" 
-        step="0.01" 
-        name="peso_pre"
-        id="peso_pre"
-        value="{% if planilla.peso_pre %}{{ planilla.peso_pre|stringformat:'g' }}{% elif sesion.peso_pre %}{{ sesion.peso_pre|stringformat:'g' }}{% endif %}"
-        placeholder="Ej: 67"
+        type="text"
+        value="{{ ultimo_peso|default:'Sin registro' }}"
+        readonly
+        class="solo-lectura"
     >
 </div>
 
 
 
+            <div class="grid">
+                <div>
+                    <label>Peso pre</label>
+                    <input type="number" step="0.01" name="peso_pre"
+                           value="{% if planilla.peso_pre %}{{ planilla.peso_pre|stringformat:'g' }}{% elif sesion.peso_pre %}{{ sesion.peso_pre|stringformat:'g' }}{% endif %}"
+                           placeholder="Ej: 67">
+                </div>
 
-
-
-
-
-
-
+                <div>
+                    <label>Peso seco</label>
+                    <input type="number" step="0.01" name="peso_seco"
+                           value="{% if planilla.peso_seco %}{{ planilla.peso_seco|stringformat:'g' }}{% endif %}"
+                           placeholder="Ej: 65">
+                </div>
 
                 <div>
                     <label>UF prescripta</label>
@@ -362,18 +377,18 @@
                 </div>
 
                 <div>
-                    <label>Temperatura</label>
+                    <label>Temperatura inicial</label>
                     <input name="temperatura_inicial" value="{{ planilla.temperatura_inicial }}">
                 </div>
 
                 <div>
-                    <label>Frecuencia cardíaca</label>
+                    <label>Frecuencia cardíaca inicial</label>
                     <input name="frecuencia_cardiaca_inicial" value="{{ planilla.frecuencia_cardiaca_inicial }}">
                 </div>
 
                 <div>
                     <label>TA inicial</label>
-                    <input name="ta_inicial" value="{{ planilla.ta_inicial }}" placeholder="Ej: 120/80">
+                    <input name="ta_inicial" value="{{ planilla.ta_inicial|default:sesion.ta_inicial }}" placeholder="Ej: 120/80">
                 </div>
 
                 <div>
@@ -383,8 +398,7 @@
 
                 <div>
                     <label>Hora inicio</label>
-                    <input id="horaInicioInput" name="hora_inicio" value="{{ planilla.hora_inicio }}" placeholder="Ej: 08:15">
-                    <div class="mini-ayuda">Usar formato 24 hs. Ejemplo: 08:15 o 14:30.</div>
+                    <input type="time" name="hora_inicio" id="hora_inicio" value="{{ planilla.hora_inicio }}">
                 </div>
             </div>
         </div>
@@ -394,7 +408,7 @@
         <div class="card">
             <div class="section-title">
                 <h2>Datos generales</h2>
-                <span class="ayuda">Información técnica del tratamiento</span>
+                <span class="ayuda">Datos técnicos de la diálisis</span>
             </div>
 
             <div class="grid">
@@ -424,11 +438,6 @@
                 </div>
 
                 <div>
-                    <label>Peso seco</label>
-                    <input type="number" step="0.01" name="peso_seco" value="{{ planilla.peso_seco|default:'' }}">
-                </div>
-
-                <div>
                     <label>TD</label>
                     <input name="td" value="{{ planilla.td }}">
                 </div>
@@ -455,75 +464,56 @@
         <div class="card">
             <div class="section-title">
                 <h2>Controles por hora</h2>
-                <span class="ayuda">Alertas automáticas cada 1 hora durante 4 horas</span>
+                <span class="ayuda">Carga de 1ª a 4ª hora</span>
             </div>
 
             <div class="tabla-scroll">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Hora</th>
-                            <th>TA</th>
-                            <th>UF</th>
-                            <th>P. Venosa</th>
-                            <th>QB</th>
-                            <th>Heparina hora</th>
-                            <th>Observación</th>
-                        </tr>
+                    <tr>
+                        <th>Hora</th>
+                        <th>TA</th>
+                        <th>UF</th>
+                        <th>PV</th>
+                        <th>QB</th>
+                        <th>Heparina</th>
+                        <th>Observación</th>
+                    </tr>
                     </thead>
 
                     <tbody>
-                        {% for control in controles %}
-                        <tr id="fila-control-{{ control.hora }}">
-                          <td>
-    <strong>{{ control.hora }}ª hora</strong>
-    <div class="hora-control" id="hora-control-{{ control.hora }}">--:--</div>
-    <span id="badge-control-{{ control.hora }}"></span>
+                    {% for c in controles %}
+                    <tr>
+                  
+
+
+<td>
+    {{ c.hora }}ª hora
+    <div class="hora-control" id="hora-control-{{ c.hora }}">
+        -
+    </div>
 </td>
 
-                            <td>
-                                <input id="control_{{ control.hora }}_ta"
-                                       name="control_{{ control.hora }}_ta"
-                                       value="{{ control.ta }}"
-                                       placeholder="Ej: 110/70">
-                            </td>
 
-                            <td>
-                                <input name="control_{{ control.hora }}_uf"
-                                       value="{{ control.ultrafiltracion }}">
-                            </td>
 
-                            <td>
-                                <input name="control_{{ control.hora }}_pv"
-                                       value="{{ control.presion_venosa }}">
-                            </td>
 
-                            <td>
-                                <input name="control_{{ control.hora }}_qb"
-                                       value="{{ control.qb }}">
-                            </td>
 
-                            <td>
-                                <input name="control_{{ control.hora }}_heparina"
-                                       value="{{ control.heparina_hora }}">
-                            </td>
 
-                            <td>
-                                <input name="control_{{ control.hora }}_observacion"
-                                       value="{{ control.observacion }}">
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7">No hay controles cargados</td>
-                        </tr>
-                        {% endfor %}
+
+
+                        <td><input name="control_{{ c.hora }}_ta" value="{{ c.ta }}"></td>
+                        <td><input name="control_{{ c.hora }}_uf" value="{{ c.ultrafiltracion }}"></td>
+                        <td><input name="control_{{ c.hora }}_pv" value="{{ c.presion_venosa }}"></td>
+                        <td><input name="control_{{ c.hora }}_qb" value="{{ c.qb }}"></td>
+                        <td><input name="control_{{ c.hora }}_heparina" value="{{ c.heparina_hora }}"></td>
+                        <td>
+                            <textarea name="control_{{ c.hora }}_observacion">{{ c.observacion }}</textarea>
+                        </td>
+                    </tr>
+                    {% endfor %}
                     </tbody>
-                </table>
-            </div>
 
-            <div class="mini-ayuda">
-                La alarma se calcula desde la hora de inicio cargada en la primera pestaña.
+                </table>
             </div>
         </div>
     </div>
@@ -538,7 +528,8 @@
             <div class="grid">
                 <div>
                     <label>Peso post</label>
-                    <input type="number" step="0.01" name="peso_post" value="{{ planilla.peso_post|default:'' }}">
+                    <input type="number" step="0.01" name="peso_post"
+                           value="{% if planilla.peso_post %}{{ planilla.peso_post|stringformat:'g' }}{% elif sesion.peso_post %}{{ sesion.peso_post|stringformat:'g' }}{% endif %}">
                 </div>
 
                 <div>
@@ -548,7 +539,7 @@
 
                 <div>
                     <label>TA de egreso</label>
-                    <input name="ta_egreso" value="{{ planilla.ta_egreso }}" placeholder="Ej: 100/60">
+                    <input name="ta_egreso" value="{{ planilla.ta_egreso|default:sesion.ta_final }}" placeholder="Ej: 100/60">
                 </div>
 
                 <div>
@@ -563,7 +554,7 @@
 
                 <div>
                     <label>Hora fin</label>
-                    <input name="hora_fin" value="{{ planilla.hora_fin }}" placeholder="Ej: 12:15">
+                    <input type="time" name="hora_fin" value="{{ planilla.hora_fin }}">
                 </div>
 
                 <div>
@@ -571,20 +562,43 @@
                     <input name="atb" value="{{ planilla.atb }}">
                 </div>
             </div>
-
-            <div style="margin-top:15px;">
-                <label>Observaciones</label>
-                <textarea name="observaciones">{{ planilla.observaciones }}</textarea>
-            </div>
         </div>
+
+        {% if es_enfermero or es_superadmin %}
+        <div class="card obs-enfermeria">
+            <h2>Observaciones de enfermería</h2>
+            <textarea name="observaciones_enfermeria">{{ planilla.observaciones_enfermeria|default:planilla.observaciones }}</textarea>
+        </div>
+        {% else %}
+        <div class="card obs-enfermeria">
+            <h2>Observaciones de enfermería</h2>
+            <textarea class="solo-lectura" readonly>{{ planilla.observaciones_enfermeria|default:planilla.observaciones }}</textarea>
+        </div>
+        {% endif %}
+
+        {% if es_medico or es_superadmin %}
+        <div class="card obs-medica">
+            <h2>Observaciones médicas</h2>
+            <textarea name="observaciones_medicas">{{ planilla.observaciones_medicas }}</textarea>
+        </div>
+        {% else %}
+        <div class="card obs-medica">
+            <h2>Observaciones médicas</h2>
+            <textarea class="solo-lectura" readonly>{{ planilla.observaciones_medicas }}</textarea>
+        </div>
+        {% endif %}
     </div>
 
     <div class="acciones">
-      <button type="submit" class="btn">💾 Guardar cambios</button>
-        <a href="/turno/?turno={{ sesion.turno }}" class="btn btn-sec">Volver al turno</a>
-        {% if not sesion.finalizada %}
-            <a href="{% url 'finalizar_sesion' sesion.id %}" class="btn btn-danger">Finalizar sesión</a>
-        {% endif %}
+        <button type="submit" class="btn">💾 Guardar cambios</button>
+
+        <a href="/turno/?turno={{ sesion.turno }}" class="btn btn-sec">
+            Volver al turno
+        </a>
+
+        <a href="{% url 'finalizar_sesion' sesion.id %}" class="btn btn-danger">
+            Finalizar sesión
+        </a>
     </div>
 
 </form>
@@ -592,169 +606,93 @@
 </div>
 
 <script>
-    let alarmasDisparadas = {};
+    function mostrarHoja(nombre) {
+        document.querySelectorAll('.hoja-tab').forEach(h => h.classList.add('oculto'));
+        document.getElementById('hoja-' + nombre).classList.remove('oculto');
 
-function actualizarHorasControles() {
-    const inicio = obtenerHoraInicio();
-    if (!inicio) return;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-tab="' + nombre + '"]').classList.add('active');
+    }
 
-    for (let hora = 1; hora <= 4; hora++) {
-        const momentoControl = new Date(inicio.getTime() + (hora * 60 * 60 * 1000));
-        const hh = String(momentoControl.getHours()).padStart(2, "0");
-        const mm = String(momentoControl.getMinutes()).padStart(2, "0");
+   function revisarAlarma() {
+    const hi = document.getElementById('hora_inicio');
 
-        const label = document.getElementById("hora-control-" + hora);
-        if (label) {
-            label.textContent = hh + ":" + mm;
+    if (!hi || !hi.value) return;
+
+    const partes = hi.value.split(':');
+
+    const inicio = new Date();
+    inicio.setHours(parseInt(partes[0]), parseInt(partes[1]), 0, 0);
+
+    const ahora = new Date();
+
+    let horaPendiente = null;
+
+    for (let i = 1; i <= 4; i++) {
+        let control = new Date(inicio);
+
+        if (i === 1) {
+            control.setMinutes(control.getMinutes() + 60);
+        } else {
+            control.setMinutes(control.getMinutes() + 60 + ((i - 1) * 60));
+        }
+
+        if (ahora >= control) {
+            horaPendiente = i;
+        }
+    }
+
+    if (horaPendiente) {
+        document.getElementById('alarmaTexto').innerText =
+            'corresponde cargar el control de la ' + horaPendiente + 'ª hora.';
+
+        document.getElementById('alarmaBox').classList.add('activa');
+    }
+}
+
+    revisarAlarma();
+    setInterval(revisarAlarma, 60000);
+
+
+function calcularHorariosControl() {
+    const hi = document.getElementById('hora_inicio');
+
+    if (!hi || !hi.value) return;
+
+    const partes = hi.value.split(':');
+
+    let base = new Date();
+    base.setHours(parseInt(partes[0]), parseInt(partes[1]), 0, 0);
+
+    for (let i = 1; i <= 4; i++) {
+        let control = new Date(base);
+
+        if (i === 1) {
+            control.setMinutes(control.getMinutes() + 60);
+        } else {
+            control.setMinutes(control.getMinutes() + 60 + ((i - 1) * 60));
+        }
+
+        const hora = String(control.getHours()).padStart(2, '0');
+        const minuto = String(control.getMinutes()).padStart(2, '0');
+
+        const elemento = document.getElementById('hora-control-' + i);
+
+        if (elemento) {
+            elemento.innerText = hora + ':' + minuto;
         }
     }
 }
 
+calcularHorariosControl();
+
+const inputHoraInicio = document.getElementById('hora_inicio');
+
+if (inputHoraInicio) {
+    inputHoraInicio.addEventListener('change', calcularHorariosControl);
+}
 
 
-
-    function mostrarHoja(nombre) {
-        document.querySelectorAll('.hoja-tab').forEach(function(hoja) {
-            hoja.classList.add('oculto');
-        });
-
-        document.querySelectorAll('.tab-btn').forEach(function(btn) {
-            btn.classList.remove('active');
-        });
-
-        document.getElementById('hoja-' + nombre).classList.remove('oculto');
-
-        const boton = document.querySelector('.tab-btn[data-tab="' + nombre + '"]');
-        if (boton) {
-            boton.classList.add('active');
-        }
-    }
-
-    function reproducirAlarma() {
-        try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.35);
-        } catch (e) {
-            console.log("El navegador bloqueó el sonido de la alarma.");
-        }
-    }
-
-    function obtenerHoraInicio() {
-        const input = document.getElementById("horaInicioInput");
-        if (!input || !input.value) return null;
-
-        const partes = input.value.trim().split(":");
-        if (partes.length < 2) return null;
-
-        const horas = parseInt(partes[0], 10);
-        const minutos = parseInt(partes[1], 10);
-
-        if (isNaN(horas) || isNaN(minutos)) return null;
-
-        const inicio = new Date();
-        inicio.setHours(horas, minutos, 0, 0);
-        return inicio;
-    }
-
-    function controlTieneDatos(hora) {
-        const ta = document.getElementById("control_" + hora + "_ta");
-        return ta && ta.value.trim() !== "";
-    }
-
-    function marcarFilaControl(hora, estado) {
-        const fila = document.getElementById("fila-control-" + hora);
-        const badge = document.getElementById("badge-control-" + hora);
-
-        if (!fila || !badge) return;
-
-        fila.classList.remove("control-alerta", "control-completo");
-        badge.innerHTML = "";
-
-        if (estado === "pendiente") {
-            fila.classList.add("control-alerta");
-            badge.innerHTML = '<span class="badge-alerta">Cargar</span>';
-        }
-
-        if (estado === "completo") {
-            fila.classList.add("control-completo");
-        }
-    }
-
-    function revisarAlarmas() {
-        const inicio = obtenerHoraInicio();
-        const alarmaBox = document.getElementById("alarmaBox");
-        const alarmaTexto = document.getElementById("alarmaTexto");
-
-        if (!inicio) {
-            alarmaBox.classList.remove("activa");
-            return;
-        }
-
-        const ahora = new Date();
-        let mensajeActivo = "";
-
-        for (let hora = 1; hora <= 4; hora++) {
-            const momentoControl = new Date(inicio.getTime() + (hora * 60 * 60 * 1000));
-
-            if (ahora >= momentoControl && !controlTieneDatos(hora)) {
-                marcarFilaControl(hora, "pendiente");
-
-                mensajeActivo = " corresponde cargar el control de la " + hora + "ª hora.";
-
-                if (!alarmasDisparadas[hora]) {
-                    alarmasDisparadas[hora] = true;
-                    reproducirAlarma();
-                    mostrarHoja("controles");
-                }
-            } else if (controlTieneDatos(hora)) {
-                marcarFilaControl(hora, "completo");
-            }
-        }
-
-        if (mensajeActivo) {
-            alarmaTexto.textContent = mensajeActivo;
-            alarmaBox.classList.add("activa");
-        } else {
-            alarmaBox.classList.remove("activa");
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-      
-
-
-actualizarHorasControles();
-revisarAlarmas();
-
-setInterval(function() {
-    actualizarHorasControles();
-    revisarAlarmas();
-}, 60000);
-
-
-        document.querySelectorAll("input").forEach(function(input) {
-       input.addEventListener("change", function() {
-    actualizarHorasControles();
-    revisarAlarmas();
-});
-
-input.addEventListener("keyup", function() {
-    actualizarHorasControles();
-    revisarAlarmas();
-});
-        });
-    });
 </script>
 
 </body>

@@ -165,7 +165,7 @@ th {
     <div class="nav">
         <a href="/turno/">Turno</a>
         <a href="/admin/">Admin</a>
-        <span class="pill">Usuario: {{ request.user.username }}</span>
+        <span class="pill">Usuario: {{ usuario_actual }}</span>
 
         <form method="post" action="{% url 'logout' %}" style="display:inline;">
             {% csrf_token %}
@@ -291,7 +291,23 @@ th {
                         - {{ s.planilla.hora_inicio }}
                     {% endif %}
                 </td>
-                <td>{{ s.paciente }}</td>
+
+
+
+
+          <td>
+    <a href="{% url 'historial_paciente' s.paciente.id %}"
+       style="color:#0f4c81;font-weight:bold;text-decoration:none;">
+        {{ s.paciente }}
+    </a>
+</td>
+                
+                
+                
+                
+                
+                
+                
                 <td>{{ s.get_turno_display }}</td>
                 <td>{{ s.puesto|default:"-" }}</td>
                 <td>{{ s.get_estado_display }}</td>

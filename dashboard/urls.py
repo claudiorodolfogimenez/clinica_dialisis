@@ -18,6 +18,7 @@ urlpatterns = [
     path("iniciar/<int:sesion_id>/", views.iniciar_sesion, name="iniciar_sesion"),
     path("finalizar/<int:sesion_id>/", views.finalizar_sesion, name="finalizar_sesion"),
     path("signos/<int:sesion_id>/", views.editar_signos, name="editar_signos"),
+    path("historial/<int:paciente_id>/", views.historial_paciente, name="historial_paciente"),
 
     path("paciente/nuevo/", views.crear_paciente_basico, name="crear_paciente_basico"),
 
@@ -25,6 +26,9 @@ urlpatterns = [
     path("login/", auth_views.LoginView.as_view(template_name="dashboard/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(next_page="/login/"), name="logout"),
 ]
+
+
+
 
 
 

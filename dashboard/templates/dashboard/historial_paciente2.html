@@ -48,7 +48,7 @@
         }
 
         .container {
-            max-width: 1250px;
+            max-width: 1200px;
             margin: 24px auto;
             padding: 0 20px;
         }
@@ -75,13 +75,8 @@
             color: #0f4c81;
         }
 
-        .tabla-scroll {
-            overflow-x: auto;
-        }
-
         table {
             width: 100%;
-            min-width: 1050px;
             border-collapse: collapse;
         }
 
@@ -95,7 +90,6 @@
 
         th {
             background: #f8fafc;
-            color: #0f4c81;
         }
 
         .ok {
@@ -119,42 +113,10 @@
             display: inline-block;
         }
 
-        .btn:hover {
-            background: #0b3a63;
-        }
-
         .acciones {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 16px;
-            }
-
-            .container {
-                padding: 0 12px;
-            }
-
-            .card {
-                padding: 14px;
-            }
-
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .nav a, .nav button, .pill {
-                font-size: 12px;
-                padding: 7px 10px;
-            }
-
-            th, td {
-                font-size: 13px;
-                padding: 8px;
-            }
         }
     </style>
 </head>
@@ -162,10 +124,8 @@
 
 <div class="header">
     <h1>Historial del Paciente</h1>
-
     <div class="nav">
-        <a href="/dashboard/">Dashboard</a>
-        <a href="/turno/">Turnos</a>
+        <a href="/">Dashboard</a>
         <a href="/sala/">Sala</a>
 
         {% if es_administracion or es_superadmin or request.user.is_staff %}
@@ -187,7 +147,7 @@
         <h2>{{ paciente.apellido }}, {{ paciente.nombre }}</h2>
 
         <div class="datos">
-            <div class="dato"><strong>DNI:</strong> {{ paciente.dni|default:"-" }}</div>
+            <div class="dato"><strong>DNI:</strong> {{ paciente.dni }}</div>
             <div class="dato"><strong>Obra social:</strong> {{ paciente.obra_social|default:"-" }}</div>
             <div class="dato"><strong>Teléfono:</strong> {{ paciente.telefono|default:"-" }}</div>
             <div class="dato"><strong>Médico tratante:</strong> {{ paciente.medico_tratante|default:"-" }}</div>
@@ -206,71 +166,59 @@
     <div class="card">
         <h2>Sesiones registradas</h2>
 
-        <div class="tabla-scroll">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Turno</th>
-                        <th>Puesto</th>
-                        <th>Hora inicio</th>
-                        <th>Hora fin</th>
-                        <th>TA inicial</th>
-                        <th>TA final</th>
-                        <th>Peso pre</th>
-                        <th>Peso post</th>
-                        <th>Estado</th>
-                        <th>Observaciones</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for sesion in sesiones %}
-                    <tr>
-                        <td>{{ sesion.fecha }}</td>
-                        <td>{{ sesion.get_turno_display }}</td>
-                        <td>{{ sesion.puesto|default:"-" }}</td>
-                        <td>{{ sesion.planilla.hora_inicio|default:"-" }}</td>
-                        <td>{{ sesion.planilla.hora_fin|default:"-" }}</td>
-                        <td>{{ sesion.ta_inicial|default:"-" }}</td>
-                        <td>{{ sesion.ta_final|default:"-" }}</td>
-                        <td>{{ sesion.peso_pre|default:"-" }}</td>
-                        <td>{{ sesion.peso_post|default:"-" }}</td>
-
-                        <td>
-                            {% if sesion.finalizada %}
-                                <span class="ok">Finalizada</span>
-                            {% else %}
-                                <span class="pendiente">Pendiente</span>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Turno</th>
+                    <th>Puesto</th>
+                    <th>TA inicial</th>
+                    <th>TA final</th>
+                    <th>Peso pre</th>
+                    <th>Peso post</th>
+                    <th>Estado</th>
+                    <th>Observaciones</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sesion in sesiones %}
+                <tr>
+                    <td>{{ sesion.fecha }}</td>
+                    <td>{{ sesion.get_turno_display }}</td>
+                    <td>{{ sesion.puesto|default:"-" }}</td>
+                    <td>{{ sesion.ta_inicial|default:"-" }}</td>
+                    <td>{{ sesion.ta_final|default:"-" }}</td>
+                    <td>{{ sesion.peso_pre|default:"-" }}</td>
+                    <td>{{ sesion.peso_post|default:"-" }}</td>
+                    <td>
+                        {% if sesion.finalizada %}
+                            <span class="ok">Finalizada</span>
+                        {% else %}
+                            <span class="pendiente">Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ sesion.observaciones|default:"-" }}</td>
+                    <td>
+                        <div class="acciones">
+                            {% if es_enfermero or es_superadmin %}
+                                <a class="btn" href="{% url 'editar_signos' sesion.id %}">Editar</a>
                             {% endif %}
-                        </td>
-
-                        <td>{{ sesion.observaciones|default:"-" }}</td>
-
-                        <td>
-                            <div class="acciones">
-                                {% if es_enfermero or es_superadmin %}
-                                    <a class="btn" href="{% url 'editar_signos' sesion.id %}">Editar</a>
+                            {% if es_enfermero or es_superadmin %}
+                                {% if not sesion.finalizada %}
+                                    <a class="btn" href="{% url 'finalizar_sesion' sesion.id %}">Finalizar</a>
                                 {% endif %}
-
-                                {% if es_enfermero or es_superadmin %}
-                                    {% if not sesion.finalizada %}
-                                        <a class="btn" href="{% url 'finalizar_sesion' sesion.id %}">Finalizar</a>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-                        </td>
-                    </tr>
-
-                    {% empty %}
-                    <tr>
-                        <td colspan="12">No hay sesiones registradas para este paciente.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10">No hay sesiones registradas para este paciente.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
 </div>

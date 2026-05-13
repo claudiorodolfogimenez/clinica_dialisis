@@ -23,11 +23,29 @@ class SesionDialisis(models.Model):
         ("finalizada", "Finalizada"),
     ]
 
+    MEDICO_CHOICES = [
+    ("juan_perez", "Dr. Juan Pérez"),
+    ("maria_garcia", "Dra. María García"),
+    ("roberto_lopez", "Dr. Roberto López"),
+]
+
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     puesto = models.ForeignKey(Puesto, on_delete=models.SET_NULL, null=True, blank=True)
     fecha = models.DateField()
     turno = models.CharField(max_length=10, choices=TURNO_CHOICES)
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default="pendiente")
+    medico_asignado = models.CharField(
+        max_length=20,
+        choices=MEDICO_CHOICES,
+        blank=True,
+        null=True,
+    )
+
+    enfermero_asignado = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+    )
 
     peso_pre = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     peso_post = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
@@ -36,7 +54,7 @@ class SesionDialisis(models.Model):
 
     medicacion = models.TextField(blank=True)
     incidencias = models.TextField(blank=True)
-    observaciones = models.TextField(blank=True)
+    observaciones = models.TextField(blank=True)  # Campo anterior, queda por compatibilidad.
 
     finalizada = models.BooleanField(default=False)
     creada_en = models.DateTimeField(auto_now_add=True)
@@ -102,7 +120,9 @@ class PlanillaHemodialisis(models.Model):
     hora_fin = models.CharField(max_length=50, blank=True)
     atb = models.CharField(max_length=100, blank=True)
 
-    observaciones = models.TextField(blank=True)
+    observaciones = models.TextField(blank=True)  # Campo anterior, queda por compatibilidad.
+    observaciones_enfermeria = models.TextField(blank=True)
+    observaciones_medicas = models.TextField(blank=True)
 
     def __str__(self):
         return f"Hemodiálisis - {self.sesion}"

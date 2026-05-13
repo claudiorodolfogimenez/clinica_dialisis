@@ -2,6 +2,7 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 
 from pacientes.models import Paciente
@@ -30,12 +31,20 @@ def usuario_en_grupo(user, nombre_grupo):
     return user.groups.filter(name=nombre_grupo).exists()
 
 
+def nombre_usuario(user):
+    nombre = user.get_full_name()
+    if nombre:
+        return nombre
+    return user.username
+
+
 def contexto_roles(request):
     return {
         "es_enfermero": usuario_en_grupo(request.user, "Enfermeros"),
         "es_medico": usuario_en_grupo(request.user, "Medicos"),
         "es_administracion": usuario_en_grupo(request.user, "Administracion"),
         "es_superadmin": request.user.is_superuser,
+        "usuario_actual": nombre_usuario(request.user),
     }
 
 
@@ -45,9 +54,17 @@ def inicio(request):
 
     pacientes_activos = Paciente.objects.filter(activo=True).count()
     sesiones_hoy = SesionDialisis.objects.filter(fecha=hoy).count()
-    sesiones_activas = SesionDialisis.objects.filter(fecha=hoy, estado="activa", finalizada=False).count()
-    sesiones_pendientes = SesionDialisis.objects.filter(fecha=hoy, estado="pendiente", finalizada=False).count()
-    sesiones_finalizadas = SesionDialisis.objects.filter(fecha=hoy, finalizada=True).count()
+
+    sesiones_activas = SesionDialisis.objects.filter(
+        fecha=hoy,
+        estado="activa",
+        finalizada=False
+    ).count()
+
+    sesiones_finalizadas = SesionDialisis.objects.filter(
+        fecha=hoy,
+        finalizada=True
+    ).count()
 
     stock_alerta = 0
     insumos_alerta = []
@@ -57,6 +74,7 @@ def inicio(request):
             activo=True,
             stock_actual__lte=20
         ).order_by("stock_actual")
+
         stock_alerta = insumos_alerta.count()
 
     ultimas_sesiones = list(
@@ -75,7 +93,7 @@ def inicio(request):
         "pacientes_activos": pacientes_activos,
         "sesiones_hoy": sesiones_hoy,
         "sesiones_activas": sesiones_activas,
-        "sesiones_pendientes": sesiones_pendientes,
+        "sesiones_pendientes": 0,
         "sesiones_finalizadas": sesiones_finalizadas,
         "stock_alerta": stock_alerta,
         "insumos_alerta": insumos_alerta,
@@ -94,13 +112,40 @@ def sala(request):
 @login_required
 def turno(request):
     turno_actual = request.GET.get("turno", "manana")
-    hoy = date.today()
+
+    fecha_get = request.GET.get("fecha")
+
+    if fecha_get:
+        try:
+            hoy = datetime.strptime(fecha_get, "%Y-%m-%d").date()
+        except ValueError:
+            hoy = date.today()
+    else:
+        hoy = date.today()
+
+    medicos = User.objects.filter(
+        username__icontains="medico"
+    ).order_by("first_name", "last_name", "username")
 
     if request.method == "POST":
         paciente_id = request.POST.get("paciente")
         puesto_id = request.POST.get("puesto")
+        medico_id = request.POST.get("medico")
+
+        medico = ""
+        if medico_id:
+            medico_user = User.objects.filter(id=medico_id).first()
+            if medico_user:
+                medico = nombre_usuario(medico_user)
+
+        enfermero = nombre_usuario(request.user)
 
         if paciente_id:
+            puesto = None
+
+            if puesto_id:
+                puesto = Puesto.objects.filter(id=puesto_id).first()
+
             sesion_existente = SesionDialisis.objects.filter(
                 paciente_id=paciente_id,
                 fecha=hoy,
@@ -108,22 +153,26 @@ def turno(request):
                 finalizada=False,
             ).first()
 
-            if not sesion_existente:
-                puesto = None
-
-                if puesto_id:
-                    puesto = Puesto.objects.filter(id=puesto_id).first()
-
+            if sesion_existente:
+                sesion_existente.estado = "activa"
+                sesion_existente.finalizada = False
+                sesion_existente.puesto = puesto
+                sesion_existente.medico_asignado = medico
+                sesion_existente.enfermero_asignado = enfermero
+                sesion_existente.save()
+            else:
                 SesionDialisis.objects.create(
                     paciente_id=paciente_id,
                     puesto=puesto,
                     fecha=hoy,
                     turno=turno_actual,
-                    estado="pendiente",
+                    estado="activa",
                     finalizada=False,
+                    medico_asignado=medico,
+                    enfermero_asignado=enfermero,
                 )
 
-        return redirect(f"/turno/?turno={turno_actual}")
+        return redirect(f"/turno/?turno={turno_actual}&fecha={hoy}")
 
     pacientes = Paciente.objects.filter(activo=True).order_by("apellido", "nombre")
     puestos = Puesto.objects.filter(activo=True).order_by("numero")
@@ -153,10 +202,6 @@ def turno(request):
             s.planilla = None
             s.duracion = None
 
-    sesiones_pendientes = [
-        s for s in sesiones if s.estado == "pendiente" and not s.finalizada
-    ]
-
     sesiones_activas = [
         s for s in sesiones if s.estado == "activa" and not s.finalizada
     ]
@@ -170,9 +215,10 @@ def turno(request):
         "turno_actual": turno_actual,
         "pacientes": pacientes,
         "puestos": puestos,
-        "sesiones_pendientes": sesiones_pendientes,
+        "medicos": medicos,
         "sesiones_activas": sesiones_activas,
         "sesiones_finalizadas": sesiones_finalizadas,
+        "sesiones_pendientes": [],
     }
 
     context.update(contexto_roles(request))
@@ -196,16 +242,36 @@ def finalizar_sesion(request, sesion_id):
     sesion.finalizada = True
     sesion.save()
 
-    return redirect(f"/turno/?turno={sesion.turno}")
+    return redirect(f"/turno/?turno={sesion.turno}&fecha={sesion.fecha}")
 
 
 @login_required
 def editar_signos(request, sesion_id):
     sesion = get_object_or_404(SesionDialisis, id=sesion_id)
-
     planilla, _ = PlanillaHemodialisis.objects.get_or_create(sesion=sesion)
 
+    ultima_sesion_anterior = (
+        SesionDialisis.objects
+        .filter(
+            paciente=sesion.paciente,
+            finalizada=True
+        )
+        .exclude(id=sesion.id)
+        .order_by("-fecha", "-id")
+        .first()
+    )
+
+    ultimo_peso = None
+
+    if ultima_sesion_anterior:
+        try:
+            ultima_planilla = ultima_sesion_anterior.planillahemodialisis
+            ultimo_peso = ultima_planilla.peso_post
+        except Exception:
+            ultimo_peso = ultima_sesion_anterior.peso_post
+
     controles = []
+
     for i in range(1, 5):
         control, _ = ControlHorarioHemodialisis.objects.get_or_create(
             planilla=planilla,
@@ -214,7 +280,6 @@ def editar_signos(request, sesion_id):
         controles.append(control)
 
     if request.method == "POST":
-        # Parámetros iniciales
         peso_pre = decimal_o_none(request.POST.get("peso_pre"))
 
         planilla.peso_pre = peso_pre
@@ -227,10 +292,8 @@ def editar_signos(request, sesion_id):
         planilla.heparina_inicial = request.POST.get("heparina_inicial", "")
         planilla.hora_inicio = request.POST.get("hora_inicio", "")
 
-        # También guardo algunos datos básicos en la sesión
         sesion.ta_inicial = request.POST.get("ta_inicial", "")
 
-        # Datos generales
         planilla.acceso_vascular = request.POST.get("acceso_vascular", "")
         planilla.dializador = request.POST.get("dializador", "")
         planilla.concentrado = request.POST.get("concentrado", "")
@@ -242,7 +305,6 @@ def editar_signos(request, sesion_id):
         planilla.qd = request.POST.get("qd", "")
         planilla.na = request.POST.get("na", "")
 
-        # Controles por hora
         for i in range(1, 5):
             control, _ = ControlHorarioHemodialisis.objects.get_or_create(
                 planilla=planilla,
@@ -257,7 +319,6 @@ def editar_signos(request, sesion_id):
             control.observacion = request.POST.get(f"control_{i}_observacion", "")
             control.save()
 
-        # Parámetros finales
         peso_post = decimal_o_none(request.POST.get("peso_post"))
 
         planilla.peso_post = peso_post
@@ -269,21 +330,33 @@ def editar_signos(request, sesion_id):
         planilla.uf_final = request.POST.get("uf_final", "")
         planilla.hora_fin = request.POST.get("hora_fin", "")
         planilla.atb = request.POST.get("atb", "")
-        planilla.observaciones = request.POST.get("observaciones", "")
+
+        if usuario_en_grupo(request.user, "Enfermeros") or request.user.is_superuser:
+            planilla.observaciones_enfermeria = request.POST.get(
+                "observaciones_enfermeria", ""
+            )
+
+        if usuario_en_grupo(request.user, "Medicos") or request.user.is_superuser:
+            planilla.observaciones_medicas = request.POST.get(
+                "observaciones_medicas", ""
+            )
 
         sesion.ta_final = request.POST.get("ta_egreso", "")
-        sesion.observaciones = request.POST.get("observaciones", "")
 
         sesion.save()
         planilla.save()
 
         return redirect("editar_signos", sesion_id=sesion.id)
 
-    return render(request, "dashboard/editar_signos.html", {
+    context = {
         "sesion": sesion,
         "planilla": planilla,
         "controles": controles,
-    })
+        "ultimo_peso": ultimo_peso,
+    }
+
+    context.update(contexto_roles(request))
+    return render(request, "dashboard/editar_signos.html", context)
 
 
 @login_required
@@ -303,4 +376,23 @@ def crear_paciente_basico(request):
 
         return redirect("/turno/")
 
-    return render(request, "dashboard/crear_paciente_basico.html")
+    context = {}
+    context.update(contexto_roles(request))
+    return render(request, "dashboard/crear_paciente_basico.html", context)
+
+
+@login_required
+def historial_paciente(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    sesiones = SesionDialisis.objects.filter(
+        paciente=paciente
+    ).order_by("-fecha", "-id")
+
+    context = {
+        "paciente": paciente,
+        "sesiones": sesiones,
+    }
+
+    context.update(contexto_roles(request))
+    return render(request, "dashboard/historial_paciente.html", context)
