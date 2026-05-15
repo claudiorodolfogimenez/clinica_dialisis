@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Datos administrativos del paciente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3f8;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #0f4c81;
+            color: white;
+            padding: 22px 35px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 24px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: #0f4c81;
+            margin-top: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 14px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 15px;
+            background: #f8fafc;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        .acciones {
+            margin-top: 22px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #0f4c81;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .btn-green {
+            background: #16a34a;
+        }
+
+        .btn-gray {
+            background: #6b7280;
+        }
+
+        .ayuda {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 18px;
+            font-weight: bold;
+        }
+
+        @media(max-width: 768px) {
+            .container {
+                padding: 14px;
+            }
+
+            .header {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Datos administrativos del paciente</h1>
+
+    {% if paciente %}
+        <div>Editando: {{ paciente.apellido }}, {{ paciente.nombre }}</div>
+    {% else %}
+        <div>Nuevo paciente</div>
+    {% endif %}
+</div>
+
+<div class="container">
+
+    <div class="panel">
+
+        <h2>Ficha administrativa</h2>
+
+        <div class="ayuda">
+            Estos datos se usarán luego para informes médicos, obras sociales y documentación mensual.
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="grid">
+
+                <div>
+                    <label>Apellido</label>
+                    <input 
+                        name="apellido" 
+                        value="{% if paciente %}{{ paciente.apellido }}{% endif %}"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label>Nombre</label>
+                    <input 
+                        name="nombre" 
+                        value="{% if paciente %}{{ paciente.nombre }}{% endif %}"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label>DNI / Documento</label>
+                    <input 
+                        name="dni" 
+                        value="{% if paciente %}{{ paciente.dni }}{% endif %}"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label>Fecha de nacimiento</label>
+                    <input 
+                        type="date" 
+                        name="fecha_nacimiento"
+                        value="{% if paciente and paciente.fecha_nacimiento %}{{ paciente.fecha_nacimiento|date:'Y-m-d' }}{% endif %}"
+                    >
+                </div>
+
+                <div>
+                    <label>Obra social</label>
+                    <input 
+                        name="obra_social"
+                        value="{% if paciente %}{{ paciente.obra_social }}{% endif %}"
+                    >
+                </div>
+
+                <div>
+                    <label>Nº de afiliado</label>
+                    <input 
+                        name="numero_afiliado"
+                        value="{% if paciente %}{{ paciente.numero_afiliado }}{% endif %}"
+                    >
+                </div>
+
+                <div>
+                    <label>Teléfono</label>
+                    <input 
+                        name="telefono"
+                        value="{% if paciente %}{{ paciente.telefono }}{% endif %}"
+                    >
+                </div>
+
+                <div>
+                    <label>Fecha ingreso a diálisis</label>
+                    <input 
+                        type="date" 
+                        name="fecha_ingreso_dialisis"
+                        value="{% if paciente and paciente.fecha_ingreso_dialisis %}{{ paciente.fecha_ingreso_dialisis|date:'Y-m-d' }}{% endif %}"
+                    >
+                </div>
+
+                <div class="full">
+                    <label>Domicilio</label>
+                    <input 
+                        name="direccion"
+                        value="{% if paciente %}{{ paciente.direccion }}{% endif %}"
+                    >
+                </div>
+
+                <div class="full">
+                    <label>Etiología</label>
+                    <textarea name="etiologia">{% if paciente %}{{ paciente.etiologia }}{% endif %}</textarea>
+                </div>
+
+                <div class="full">
+                    <label>Diagnóstico / antecedentes administrativos</label>
+                    <textarea name="diagnostico">{% if paciente %}{{ paciente.diagnostico }}{% endif %}</textarea>
+                </div>
+
+                <div>
+                    <label>Acceso vascular</label>
+                    <input 
+                        name="acceso_vascular"
+                        value="{% if paciente %}{{ paciente.acceso_vascular }}{% endif %}"
+                    >
+                </div>
+
+                <div>
+                    <label>Médico tratante</label>
+                    <input 
+                        name="medico_tratante"
+                        value="{% if paciente %}{{ paciente.medico_tratante }}{% endif %}"
+                    >
+                </div>
+
+                <div>
+                    <label>Estado</label>
+                    <select name="activo">
+                        <option value="1" {% if not paciente or paciente.activo %}selected{% endif %}>
+                            Activo
+                        </option>
+                        <option value="0" {% if paciente and not paciente.activo %}selected{% endif %}>
+                            Inactivo
+                        </option>
+                    </select>
+                </div>
+
+                <div class="full">
+                    <label>Observaciones administrativas</label>
+                    <textarea name="observaciones">{% if paciente %}{{ paciente.observaciones }}{% endif %}</textarea>
+                </div>
+
+            </div>
+
+            <div class="acciones">
+                <button type="submit" class="btn btn-green">
+                    💾 Guardar paciente
+                </button>
+
+                <a href="{% url 'lista_pacientes' %}" class="btn btn-gray">
+                    Volver
+                </a>
+
+                <a href="/dashboard/" class="btn">
+                    Dashboard
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

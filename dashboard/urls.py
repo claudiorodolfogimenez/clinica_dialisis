@@ -20,6 +20,12 @@ urlpatterns = [
     path("signos/<int:sesion_id>/", views.editar_signos, name="editar_signos"),
     path("historial/<int:paciente_id>/", views.historial_paciente, name="historial_paciente"),
 
+    path(
+        "historial-mensual/<int:paciente_id>/",
+        views.historial_mensual,
+        name="historial_mensual"
+    ),
+
     path("paciente/nuevo/", views.crear_paciente_basico, name="crear_paciente_basico"),
 
     # Auth

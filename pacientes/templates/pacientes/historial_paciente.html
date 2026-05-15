@@ -204,13 +204,22 @@
     </div>
 
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-            <h2 style="margin:0;">Sesiones registradas</h2>
+     
 
-            <a href="{% url 'historial_mensual' paciente.id %}" class="btn">
-                📋 Ver evolución mensual
-            </a>
-        </div>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+    <h2 style="margin:0;">Sesiones registradas</h2>
+
+    <a
+        href="{% url 'historial_mensual' paciente.id %}"
+        class="btn"
+    >
+        📋 Ver evolución mensual
+    </a>
+</div>
+
+
+
+
 
         <div class="tabla-scroll">
             <table>

@@ -396,3 +396,79 @@ def historial_paciente(request, paciente_id):
 
     context.update(contexto_roles(request))
     return render(request, "dashboard/historial_paciente.html", context)
+
+
+@login_required
+def historial_mensual(request, paciente_id):
+    paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    hoy = date.today()
+
+    try:
+        mes = int(request.GET.get("mes", hoy.month))
+    except ValueError:
+        mes = hoy.month
+
+    try:
+        anio = int(request.GET.get("anio", hoy.year))
+    except ValueError:
+        anio = hoy.year
+
+    sesiones = (
+        SesionDialisis.objects
+        .filter(
+            paciente=paciente,
+            fecha__month=mes,
+            fecha__year=anio
+        )
+        .select_related("paciente", "puesto")
+        .order_by("fecha", "id")
+    )
+
+    sesiones_con_planilla = []
+
+    for s in sesiones:
+        try:
+            s.planilla = s.planillahemodialisis
+        except Exception:
+            s.planilla = None
+
+        controles_por_hora = {}
+
+        if s.planilla:
+            for control in s.planilla.controles.all().order_by("hora"):
+                controles_por_hora[control.hora] = control
+
+        s.controles_por_hora = controles_por_hora
+        sesiones_con_planilla.append(s)
+
+    meses = [
+        (1, "Enero"),
+        (2, "Febrero"),
+        (3, "Marzo"),
+        (4, "Abril"),
+        (5, "Mayo"),
+        (6, "Junio"),
+        (7, "Julio"),
+        (8, "Agosto"),
+        (9, "Septiembre"),
+        (10, "Octubre"),
+        (11, "Noviembre"),
+        (12, "Diciembre"),
+    ]
+
+    context = {
+        "paciente": paciente,
+        "sesiones": sesiones_con_planilla,
+        "mes": mes,
+        "anio": anio,
+        "meses": meses,
+    }
+
+    context.update(contexto_roles(request))
+
+    return render(
+        request,
+        "dashboard/historial_mensual.html",
+        context
+    )

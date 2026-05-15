@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Planilla mensual de hemodiálisis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#eef3f8;
+    margin:0;
+    color:#111827;
+}
+
+.header{
+    background:#0f4c81;
+    color:white;
+    padding:18px 28px;
+}
+
+.header h1{
+    margin:0 0 8px 0;
+}
+
+.nav{
+    margin-top:12px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+}
+
+.nav a,
+.nav button{
+    background:rgba(255,255,255,.2);
+    color:white;
+    border:none;
+    border-radius:9px;
+    padding:9px 13px;
+    font-weight:bold;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.container{
+    max-width:1500px;
+    margin:20px auto;
+    padding:0 18px;
+}
+
+.card{
+    background:white;
+    border-radius:14px;
+    padding:18px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+    margin-bottom:18px;
+}
+
+.filtros{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:end;
+}
+
+.filtros label{
+    display:block;
+    font-size:13px;
+    font-weight:bold;
+    color:#374151;
+    margin-bottom:4px;
+}
+
+.filtros select,
+.filtros input{
+    padding:9px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+}
+
+.btn{
+    background:#0f4c81;
+    color:white;
+    padding:10px 14px;
+    border:none;
+    border-radius:9px;
+    font-weight:bold;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.planilla{
+    overflow-x:auto;
+}
+
+table{
+    border-collapse:collapse;
+    width:100%;
+    min-width:1500px;
+    background:white;
+}
+
+th, td{
+    border:1px solid #9ca3af;
+    padding:6px;
+    font-size:12px;
+    text-align:center;
+    vertical-align:middle;
+}
+
+th{
+    background:#e5e7eb;
+    font-weight:bold;
+}
+
+.logo-box{
+    width:180px;
+    text-align:left;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.logo-sub{
+    font-size:11px;
+    letter-spacing:1px;
+}
+
+.titulo{
+    font-size:18px;
+    font-weight:bold;
+}
+
+.campo{
+    text-align:left;
+    font-weight:bold;
+    background:#f8fafc;
+}
+
+.parametro{
+    text-align:left;
+    font-weight:bold;
+    background:#f8fafc;
+    min-width:145px;
+}
+
+.grupo{
+    font-weight:bold;
+    background:#e5e7eb;
+    width:95px;
+}
+
+.obs{
+    text-align:left;
+    white-space:pre-wrap;
+    min-width:220px;
+}
+
+.small{
+    font-size:11px;
+}
+
+@media print{
+    body{
+        background:white;
+    }
+
+    .no-print{
+        display:none !important;
+    }
+
+    .container{
+        max-width:none;
+        margin:0;
+        padding:0;
+    }
+
+    .card{
+        box-shadow:none;
+        border-radius:0;
+        padding:0;
+        margin:0;
+    }
+
+    table{
+        min-width:0;
+        width:100%;
+    }
+
+    th, td{
+        font-size:8px;
+        padding:2px;
+    }
+
+    @page{
+        size: A4 landscape;
+        margin: 8mm;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header no-print">
+    <h1>Planilla mensual de hemodiálisis</h1>
+
+    <div class="nav">
+        <a href="/dashboard/">🏠 Dashboard</a>
+        <a href="/turno/">📋 Turnos</a>
+        <a href="{% url 'historial_paciente' paciente.id %}">👤 Historial</a>
+        <button type="button" onclick="window.print()">🖨 Imprimir / PDF</button>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="card no-print">
+        <form method="get" class="filtros">
+            <div>
+                <label>Mes</label>
+                <select name="mes">
+                    {% for numero, nombre in meses %}
+                        <option value="{{ numero }}" {% if numero == mes %}selected{% endif %}>
+                            {{ nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Año</label>
+                <input type="number" name="anio" value="{{ anio }}">
+            </div>
+
+            <button type="submit" class="btn">Buscar</button>
+        </form>
+    </div>
+
+    <div class="card planilla">
+
+        <table>
+            <tr>
+                <td rowspan="3" class="logo-box">
+                    Salud Renal
+                    <div class="logo-sub">SAN LUIS</div>
+                    <div class="logo-sub">NEFROLOGÍA INTEGRAL</div>
+                </td>
+
+                <td rowspan="3" class="titulo">HEMODIÁLISIS</td>
+
+                <td colspan="4" class="campo">
+                    Paciente / OS:
+                    {{ paciente.apellido }}, {{ paciente.nombre }}
+                    /
+                    {{ paciente.obra_social|default:"-" }}
+                </td>
+
+                <td colspan="3" class="campo">
+                    Documento:
+                    {{ paciente.dni|default:"-" }}
+                </td>
+
+                <td colspan="2" class="campo">
+                    Edad:
+                    {% if paciente.fecha_nacimiento %}
+                        {{ paciente.fecha_nacimiento|timesince }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td colspan="2" class="campo">
+                    Talla:
+                    -
+                </td>
+
+                <td colspan="2" class="campo">
+                    Peso seco:
+                    {% if sesiones and sesiones.0.planilla %}
+                        {{ sesiones.0.planilla.peso_seco|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="3" class="campo">
+                    Acceso vascular:
+                    {{ paciente.acceso_vascular|default:"-" }}
+                </td>
+
+                <td colspan="3" class="campo">
+                    Dializador:
+                    {% if sesiones and sesiones.0.planilla %}
+                        {{ sesiones.0.planilla.dializador|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td colspan="3" class="campo">
+                    Concentrado:
+                    {% if sesiones and sesiones.0.planilla %}
+                        {{ sesiones.0.planilla.concentrado|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td colspan="2" class="campo">
+                    Agujas:
+                    {% if sesiones and sesiones.0.planilla %}
+                        {{ sesiones.0.planilla.agujas|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td class="campo">
+                    TD:
+                    {% if sesiones and sesiones.0.planilla %}
+                        {{ sesiones.0.planilla.td|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td class="campo">
+                    QB:
+                    {% if sesiones and sesiones.0.planilla %}
+                        {{ sesiones.0.planilla.qb|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="3" class="campo">
+                    Mes: {{ mes }}
+                </td>
+
+                <td colspan="3" class="campo">
+                    Año: {{ anio }}
+                </td>
+
+                <td colspan="3" class="campo">
+                    Enfermera/o:
+                    {% if sesiones %}
+                        {{ sesiones.0.enfermero_asignado|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td colspan="3" class="campo">
+                    Médico:
+                    {% if sesiones %}
+                        {{ sesiones.0.medico_asignado|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td class="campo">
+                    QD:
+                    {% if sesiones and sesiones.0.planilla %}
+                        {{ sesiones.0.planilla.qd|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td class="campo">
+                    Na:
+                    {% if sesiones and sesiones.0.planilla %}
+                        {{ sesiones.0.planilla.na|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th class="parametro">Nº Hemodiálisis y fecha</th>
+                {% for s in sesiones %}
+                    <th>
+                        {{ forloop.counter }}<br>
+                        <span class="small">{{ s.fecha|date:"d/m" }}</span>
+                    </th>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">Peso Pre</td>
+                {% for s in sesiones %}
+                    <td>{{ s.peso_pre|default:"-" }}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">Peso Post</td>
+                {% for s in sesiones %}
+                    <td>{{ s.peso_post|default:"-" }}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">UF prescripta</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.uf_prescripta|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">Temperatura inicial</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.temperatura_inicial|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">Frec. cardíaca inicial</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.frecuencia_cardiaca_inicial|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">TA inicial</td>
+                {% for s in sesiones %}
+                    <td>{{ s.ta_inicial|default:"-" }}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">Heparina inicial</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.heparina_inicial|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">Hora inicio</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.hora_inicio|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">1ª hora - TA</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.1 %}{{ s.controles_por_hora.1.ta|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">1ª hora - UF</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.1 %}{{ s.controles_por_hora.1.ultrafiltracion|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">1ª hora - P. venosa</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.1 %}{{ s.controles_por_hora.1.presion_venosa|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">1ª hora - QB</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.1 %}{{ s.controles_por_hora.1.qb|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">1ª hora - Heparina</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.1 %}{{ s.controles_por_hora.1.heparina_hora|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">2ª hora - TA</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.2 %}{{ s.controles_por_hora.2.ta|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">2ª hora - UF</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.2 %}{{ s.controles_por_hora.2.ultrafiltracion|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">2ª hora - P. venosa</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.2 %}{{ s.controles_por_hora.2.presion_venosa|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">2ª hora - QB</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.2 %}{{ s.controles_por_hora.2.qb|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">2ª hora - Heparina</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.2 %}{{ s.controles_por_hora.2.heparina_hora|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">3ª hora - TA</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.3 %}{{ s.controles_por_hora.3.ta|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">3ª hora - UF</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.3 %}{{ s.controles_por_hora.3.ultrafiltracion|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">3ª hora - P. venosa</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.3 %}{{ s.controles_por_hora.3.presion_venosa|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">3ª hora - QB</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.3 %}{{ s.controles_por_hora.3.qb|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">3ª hora - Heparina</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.3 %}{{ s.controles_por_hora.3.heparina_hora|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">4ª hora - TA</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.4 %}{{ s.controles_por_hora.4.ta|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">4ª hora - UF</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.4 %}{{ s.controles_por_hora.4.ultrafiltracion|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">4ª hora - P. venosa</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.4 %}{{ s.controles_por_hora.4.presion_venosa|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">4ª hora - QB</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.4 %}{{ s.controles_por_hora.4.qb|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td class="parametro">4ª hora - Heparina</td>
+                {% for s in sesiones %}
+                    <td>{% if s.controles_por_hora.4 %}{{ s.controles_por_hora.4.heparina_hora|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">Temperatura final</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.temperatura_final|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">TA de egreso</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.ta_egreso|default:s.ta_final }}{% else %}{{ s.ta_final|default:"-" }}{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">Frec. cardíaca final</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.frecuencia_cardiaca_final|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">UF final</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.uf_final|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">Hora Fin</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.hora_fin|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td class="parametro">ATB</td>
+                {% for s in sesiones %}
+                    <td>{% if s.planilla %}{{ s.planilla.atb|default:"-" }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+        </table>
+
+        <br>
+
+        <table>
+            <tr>
+                <th style="width:140px;">Nº HD / Fecha</th>
+                <th>Evolución clínica y de enfermería</th>
+                <th style="width:180px;">Observación médica</th>
+                <th style="width:150px;">Firma médico</th>
+                <th style="width:150px;">Firma enfermero</th>
+                <th style="width:150px;">Firma paciente</th>
+            </tr>
+
+            {% for s in sesiones %}
+            <tr>
+                <td>
+                    {{ forloop.counter }}<br>
+                    {{ s.fecha|date:"d/m/Y" }}
+                </td>
+
+                <td class="obs">
+                    {% if s.planilla %}
+                        {{ s.planilla.observaciones_enfermeria|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td class="obs">
+                    {% if s.planilla %}
+                        {{ s.planilla.observaciones_medicas|default:"-" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td>{{ s.medico_asignado|default:"" }}</td>
+                <td>{{ s.enfermero_asignado|default:"" }}</td>
+                <td></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No hay sesiones para este mes.</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>
