@@ -472,3 +472,9 @@ def historial_mensual(request, paciente_id):
         "dashboard/historial_mensual.html",
         context
     )
+@login_required
+def home(request):
+    if usuario_en_grupo(request.user, "Administracion"):
+        return redirect("lista_pacientes")
+
+    return redirect("turno")

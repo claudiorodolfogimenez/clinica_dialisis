@@ -8,7 +8,7 @@ urlpatterns = [
     path("dashboard/", views.inicio, name="inicio"),
 
     # 👉 Redirección principal (login o acceso directo)
-    path("", lambda request: redirect("turno"), name="home"),
+    path("", views.home, name="home"),
 
     # 👉 Turnos (pantalla principal)
     path("turno/", views.turno, name="turno"),
