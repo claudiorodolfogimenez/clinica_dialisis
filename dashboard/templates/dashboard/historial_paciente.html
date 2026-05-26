@@ -164,20 +164,15 @@
     <h1>Historial del Paciente</h1>
 
     <div class="nav">
-        <a href="/dashboard/">Dashboard</a>
-        <a href="/turno/">Turnos</a>
-        <a href="/sala/">Sala</a>
+        <a href="/pacientes/" class="btn btn-gray">
+    ← Volver
+</a>
 
-        {% if es_administracion or es_superadmin or request.user.is_staff %}
-            <a href="/admin/">Admin</a>
-        {% endif %}
+        
 
         <span class="pill">Usuario: {{ request.user.username }}</span>
 
-        <form method="post" action="/logout/" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit">Salir</button>
-        </form>
+       
     </div>
 </div>
 
