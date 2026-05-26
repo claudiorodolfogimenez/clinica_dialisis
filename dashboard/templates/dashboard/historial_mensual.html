@@ -206,8 +206,9 @@ th{
     <h1>Planilla mensual de hemodiálisis</h1>
 
     <div class="nav">
-        <a href="/dashboard/">🏠 Dashboard</a>
-        <a href="/turno/">📋 Turnos</a>
+       <a href="/pacientes/" class="btn btn-gray">
+    ← Volver
+</a>
         <a href="{% url 'historial_paciente' paciente.id %}">👤 Historial</a>
         <button type="button" onclick="window.print()">🖨 Imprimir / PDF</button>
     </div>
