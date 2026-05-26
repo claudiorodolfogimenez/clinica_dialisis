@@ -227,9 +227,15 @@
 
         <div style="display:flex; gap:10px;">
 
-            <a href="{% url 'logout' %}" class="btn btn-red">
-                🚪 Salir
-            </a>
+ 
+
+<form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+
+    <button type="submit" class="btn btn-red">
+        🚪 Salir
+    </button>
+</form>
 
             <a href="{% url 'nuevo_paciente' %}" class="btn btn-green">
                 + Nuevo paciente
