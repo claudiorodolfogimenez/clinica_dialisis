@@ -316,14 +316,7 @@
             <div>Fecha: {{ hoy }}</div>
         </div>
 
-        <div class="nav-left">
-            <a href="/dashboard/" class="nav-btn">🏠 Dashboard</a>
-            <a href="/turno/" class="nav-btn active">📋 Turno</a>
-            <a href="/pacientes/" class="nav-btn">    🗂 Administración</a>
-
-
-
-        </div>
+       
 
         <div class="nav-right">
             <span class="usuario">👤 {{ usuario_actual }}</span>
@@ -332,6 +325,7 @@
                 {% csrf_token %}
                 <button type="submit" class="btn-logout">🚪 Salir</button>
             </form>
+        
         </div>
     </div>
 </div>

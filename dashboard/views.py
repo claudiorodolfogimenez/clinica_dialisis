@@ -132,11 +132,14 @@ def turno(request):
         puesto_id = request.POST.get("puesto")
         medico_id = request.POST.get("medico")
 
+        
+
         medico = ""
         if medico_id:
             medico_user = User.objects.filter(id=medico_id).first()
             if medico_user:
                 medico = nombre_usuario(medico_user)
+                
 
         enfermero = nombre_usuario(request.user)
 
@@ -222,6 +225,11 @@ def turno(request):
     }
 
     context.update(contexto_roles(request))
+
+
+
+
+
     return render(request, "dashboard/turno.html", context)
 
 
