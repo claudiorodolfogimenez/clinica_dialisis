@@ -567,12 +567,12 @@
         {% if es_enfermero or es_superadmin %}
         <div class="card obs-enfermeria">
             <h2>Observaciones de enfermería</h2>
-            <textarea name="observaciones_enfermeria">{{ planilla.observaciones_enfermeria|default:planilla.observaciones }}</textarea>
+            <textarea name="observaciones_enfermeria">{{ planilla.observaciones_enfermeria|default:"" }}</textarea>
         </div>
         {% else %}
         <div class="card obs-enfermeria">
             <h2>Observaciones de enfermería</h2>
-            <textarea class="solo-lectura" readonly>{{ planilla.observaciones_enfermeria|default:planilla.observaciones }}</textarea>
+            <textarea class="solo-lectura" readonly>{{ planilla.observaciones_enfermeria|default:"" }}</textarea>
         </div>
         {% endif %}
 

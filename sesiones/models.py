@@ -1,9 +1,10 @@
 from django.db import models
+from django.contrib.auth.models import User
 from pacientes.models import Paciente
 
 
 class Puesto(models.Model):
-    numero = models.PositiveIntegerField(unique=True)
+    numero = models.IntegerField(unique=True)
     activo = models.BooleanField(default=True)
 
     def __str__(self):
@@ -11,6 +12,7 @@ class Puesto(models.Model):
 
 
 class SesionDialisis(models.Model):
+
     TURNO_CHOICES = [
         ("manana", "Mañana"),
         ("tarde", "Tarde"),
@@ -23,38 +25,30 @@ class SesionDialisis(models.Model):
         ("finalizada", "Finalizada"),
     ]
 
-    MEDICO_CHOICES = [
-    ("juan_perez", "Dr. Juan Pérez"),
-    ("maria_garcia", "Dra. María García"),
-    ("roberto_lopez", "Dr. Roberto López"),
-]
-
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
     puesto = models.ForeignKey(Puesto, on_delete=models.SET_NULL, null=True, blank=True)
+
     fecha = models.DateField()
-    turno = models.CharField(max_length=10, choices=TURNO_CHOICES)
+    turno = models.CharField(max_length=10, choices=TURNO_CHOICES, default="manana")
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default="pendiente")
-    medico_asignado = models.CharField(
-        max_length=20,
-        choices=MEDICO_CHOICES,
-        blank=True,
-        null=True,
+
+    medico_asignado = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="sesiones_medico"
     )
 
-    enfermero_asignado = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True,
+    enfermero_asignado = models.ForeignKey(
+        User, on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="sesiones_enfermero"
     )
 
     peso_pre = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     peso_post = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+
     ta_inicial = models.CharField(max_length=20, blank=True)
     ta_final = models.CharField(max_length=20, blank=True)
-
-    medicacion = models.TextField(blank=True)
-    incidencias = models.TextField(blank=True)
-    observaciones = models.TextField(blank=True)  # Campo anterior, queda por compatibilidad.
 
     finalizada = models.BooleanField(default=False)
     creada_en = models.DateTimeField(auto_now_add=True)
@@ -66,69 +60,168 @@ class SesionDialisis(models.Model):
         return f"{self.paciente} - {self.fecha} - {self.turno}"
 
 
-class PlanillaEnfermeria(models.Model):
-    sesion = models.OneToOneField(SesionDialisis, on_delete=models.CASCADE)
-
-    indicaciones_medicas = models.TextField(blank=True)
-    eritropoyetina = models.CharField(max_length=100, blank=True)
-    hierro = models.CharField(max_length=100, blank=True)
-    vacunacion = models.CharField(max_length=100, blank=True)
-    antibiotico = models.CharField(max_length=100, blank=True)
-    paracetamol = models.CharField(max_length=100, blank=True)
-    otro = models.CharField(max_length=100, blank=True)
-
-    medicacion_entregada = models.TextField(blank=True)
-    evolucion_enfermeria = models.TextField(blank=True)
-
-    firma_medico = models.CharField(max_length=100, blank=True)
-    firma_enfermero = models.CharField(max_length=100, blank=True)
-    firma_paciente = models.CharField(max_length=100, blank=True)
-
-    creada_en = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Planilla enfermería - {self.sesion}"
 
 
 class PlanillaHemodialisis(models.Model):
-    sesion = models.OneToOneField(SesionDialisis, on_delete=models.CASCADE)
 
-    acceso_vascular = models.CharField(max_length=100, blank=True)
-    dializador = models.CharField(max_length=100, blank=True)
-    concentrado = models.CharField(max_length=100, blank=True)
-    agujas = models.CharField(max_length=100, blank=True)
-    talla = models.CharField(max_length=50, blank=True)
-    peso_seco = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    td = models.CharField(max_length=50, blank=True)
-    qb = models.CharField(max_length=50, blank=True)
-    qd = models.CharField(max_length=50, blank=True)
-    na = models.CharField(max_length=50, blank=True)
+    sesion = models.OneToOneField(
+        SesionDialisis,
+        on_delete=models.CASCADE
+    )
 
-    peso_pre = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    peso_post = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    uf_prescripta = models.CharField(max_length=50, blank=True)
-    temperatura_inicial = models.CharField(max_length=50, blank=True)
-    frecuencia_cardiaca_inicial = models.CharField(max_length=50, blank=True)
-    ta_inicial = models.CharField(max_length=50, blank=True)
-    heparina_inicial = models.CharField(max_length=100, blank=True)
-    hora_inicio = models.CharField(max_length=50, blank=True)
+    peso_pre = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
 
-    temperatura_final = models.CharField(max_length=50, blank=True)
-    ta_egreso = models.CharField(max_length=50, blank=True)
-    frecuencia_cardiaca_final = models.CharField(max_length=50, blank=True)
-    uf_final = models.CharField(max_length=50, blank=True)
-    hora_fin = models.CharField(max_length=50, blank=True)
-    atb = models.CharField(max_length=100, blank=True)
+    peso_post = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
 
-    observaciones = models.TextField(blank=True)  # Campo anterior, queda por compatibilidad.
-    observaciones_enfermeria = models.TextField(blank=True)
-    observaciones_medicas = models.TextField(blank=True)
+    peso_seco = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+
+    uf_prescripta = models.CharField(
+        max_length=50,
+        blank=True
+    )
+
+    temperatura_inicial = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    frecuencia_cardiaca_inicial = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    ta_inicial = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    heparina_inicial = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    hora_inicio = models.TimeField(
+        null=True,
+        blank=True
+    )
+
+    acceso_vascular = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    dializador = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    concentrado = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    agujas = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    talla = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    td = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    qb = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    qd = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    na = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    temperatura_final = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    ta_egreso = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    frecuencia_cardiaca_final = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    uf_final = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    hora_fin = models.TimeField(
+        null=True,
+        blank=True
+    )
+
+    atb = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    observaciones_enfermeria = models.TextField(
+        blank=True
+    )
+
+    observaciones_medicas = models.TextField(
+        blank=True
+    )
+
+    creada_en = models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
-        return f"Hemodiálisis - {self.sesion}"
+        return f"Planilla - {self.sesion}"
+
+
+
+
+
+
+
+
+
 
 
 class ControlHorarioHemodialisis(models.Model):
+
     planilla = models.ForeignKey(
         PlanillaHemodialisis,
         on_delete=models.CASCADE,
@@ -148,4 +241,4 @@ class ControlHorarioHemodialisis(models.Model):
         ordering = ["hora"]
 
     def __str__(self):
-        return f"Hora {self.hora} - {self.planilla}"
+        return f"Hora {self.hora} - Sesión {self.planilla.sesion_id}"

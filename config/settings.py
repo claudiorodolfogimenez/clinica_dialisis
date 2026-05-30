@@ -18,6 +18,8 @@ ALLOWED_HOSTS = [
     "clinicadialisis-production.up.railway.app",
     "saludrenalsl.online",
     "www.saludrenalsl.online",
+    "192.168.1.11",
+
 ]
 
 CSRF_TRUSTED_ORIGINS = [

@@ -32,25 +32,10 @@
             flex-wrap: wrap;
         }
 
-        .nav-left,
         .nav-right {
             display: flex;
             gap: 10px;
             align-items: center;
-        }
-
-        .nav-btn {
-            background: white;
-            color: #0f4c81;
-            padding: 8px 14px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .nav-btn.active {
-            background: #2563eb;
-            color: white;
         }
 
         .usuario {
@@ -113,40 +98,36 @@
             display: inline-block !important;
         }
 
-.form-fecha {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    background: white;
-    padding: 8px 12px;
-    border-radius: 999px;
-}
+        .form-fecha {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 999px;
+        }
 
-.form-fecha label {
-    margin: 0;
-    font-size: 13px;
-    color: #0f4c81;
-}
+        .form-fecha label {
+            margin: 0;
+            font-size: 13px;
+            color: #0f4c81;
+        }
 
-.form-fecha input {
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 7px;
-}
+        .form-fecha input {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 7px;
+        }
 
-.form-fecha button {
-    background: #0f4c81;
-    color: white;
-    border: none;
-    border-radius: 999px;
-    padding: 8px 12px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-
-
-
+        .form-fecha button {
+            background: #0f4c81;
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
         .form-carga {
             background: white;
@@ -316,8 +297,6 @@
             <div>Fecha: {{ hoy }}</div>
         </div>
 
-       
-
         <div class="nav-right">
             <span class="usuario">👤 {{ usuario_actual }}</span>
 
@@ -325,7 +304,6 @@
                 {% csrf_token %}
                 <button type="submit" class="btn-logout">🚪 Salir</button>
             </form>
-        
         </div>
     </div>
 </div>
@@ -333,246 +311,399 @@
 <div class="container">
 
     <div class="turnos">
-        <a href="/turno/?turno=manana" class="{% if turno_actual == 'manana' %}activo{% endif %}">
+
+        <a href="/turno/?turno=manana"
+           class="{% if turno_actual == 'manana' %}activo{% endif %}">
             Mañana
         </a>
 
-        <a href="/turno/?turno=tarde" class="{% if turno_actual == 'tarde' %}activo{% endif %}">
+        <a href="/turno/?turno=tarde"
+           class="{% if turno_actual == 'tarde' %}activo{% endif %}">
             Tarde
         </a>
 
-        <a href="/turno/?turno=noche" class="{% if turno_actual == 'noche' %}activo{% endif %}">
+        <a href="/turno/?turno=noche"
+           class="{% if turno_actual == 'noche' %}activo{% endif %}">
             Noche
         </a>
 
+        <form method="get" action="/turno/" class="form-fecha">
 
-<form method="get" action="/turno/" class="form-fecha">
-    <input type="hidden" name="turno" value="{{ turno_actual }}">
+            <input type="hidden" name="turno" value="{{ turno_actual }}">
 
-    <label>Ver fecha</label>
+            <label>Ver fecha</label>
 
-    <input type="date" name="fecha" value="{{ hoy|date:'Y-m-d' }}">
+            <input type="date"
+                   name="fecha"
+                   value="{{ hoy|date:'Y-m-d' }}">
 
-    <button type="submit">
-        Buscar
-    </button>
-</form>
+            <button type="submit">
+                Buscar
+            </button>
 
+        </form>
 
-        <button type="button" onclick="toggleCarga()" class="btn-nueva-sesion">
+        {% if not es_medico %}
+
+        <button type="button"
+                onclick="toggleCarga()"
+                class="btn-nueva-sesion">
+
             ➕ Nueva sesión de diálisis
+
         </button>
 
-        <a href="{% url 'crear_paciente_basico' %}" class="btn-cargar">
+        <a href="{% url 'crear_paciente_basico' %}"
+           class="btn-cargar">
+
             + Nuevo paciente
+
         </a>
+
+        {% endif %}
+
     </div>
 
     <div id="formCarga" class="form-carga">
+
         <form method="post">
+
             {% csrf_token %}
 
             <div class="form-grid">
 
                 <div>
+
                     <label>Paciente</label>
+
                     <select name="paciente" required>
-                        <option value="">Seleccione paciente</option>
+
+                        <option value="">
+                            Seleccione paciente
+                        </option>
 
                         {% for p in pacientes %}
-                            <option value="{{ p.id }}">
-                                {{ p.apellido }}, {{ p.nombre }}
-                            </option>
+
+                        <option value="{{ p.id }}">
+                            {{ p.apellido }}, {{ p.nombre }}
+                        </option>
+
                         {% endfor %}
+
                     </select>
+
                 </div>
 
                 <div>
+
                     <label>Puesto</label>
-                    <select name="puesto">
-                        <option value="">Sin puesto</option>
+
+                    <select name="puesto" required>
+
+                        <option value="">
+                            Seleccionar puesto
+                        </option>
 
                         {% for puesto in puestos %}
-                            <option value="{{ puesto.id }}">
-                                Puesto {{ puesto.numero }}
-                            </option>
+
+                        <option value="{{ puesto.id }}">
+                            Puesto {{ puesto.numero }}
+                        </option>
+
                         {% endfor %}
+
                     </select>
+
                 </div>
 
                 <div>
+
                     <label>Médico</label>
+
                     <select name="medico">
-                        <option value="">Sin asignar</option>
+
+                        <option value="">
+                            Sin asignar
+                        </option>
 
                         {% for medico in medicos %}
-                            <option value="{{ medico.id }}">
-                                {% if medico.get_full_name %}
-                                    {{ medico.get_full_name }}
-                                {% else %}
-                                    {{ medico.username }}
-                                {% endif %}
-                            </option>
+
+                        <option value="{{ medico.id }}">
+
+                            {% if medico.get_full_name %}
+                                {{ medico.get_full_name }}
+                            {% else %}
+                                {{ medico.username }}
+                            {% endif %}
+
+                        </option>
+
                         {% endfor %}
+
                     </select>
+
                 </div>
 
-                <button type="submit" class="btn-submit">
+                <button type="submit"
+                        class="btn-submit">
+
                     Agregar
+
                 </button>
 
             </div>
+
         </form>
+
     </div>
 
     <div class="seccion">
+
         <h2>
             Pacientes en sesión
-            <span class="contador">{{ sesiones_activas|length }}</span>
+            <span class="contador">
+                {{ sesiones_activas|length }}
+            </span>
         </h2>
 
         <div class="fichas">
+
             {% for sesion in sesiones_activas %}
-                <div class="card activa">
-                    <h3>
-                        <a href="{% url 'historial_paciente' sesion.paciente.id %}" style="text-decoration:none;color:#0f4c81;">
-                            {{ sesion.paciente }}
-                        </a>
-                    </h3>
 
-                    <div class="linea">
-                        <span>Puesto</span>
-                        <strong>{{ sesion.puesto.numero|default:"-" }}</strong>
-                    </div>
+            <div class="card activa">
 
-                    <div class="linea">
-                        <span>Médico</span>
-                        <strong>{{ sesion.medico_asignado|default:"Sin asignar" }}</strong>
-                    </div>
+                <h3>
 
-                    <div class="linea">
-                        <span>Enfermero</span>
-                        <strong>{{ sesion.enfermero_asignado|default:"Sin asignar" }}</strong>
-                    </div>
+                    <a href="{% url 'historial_paciente' sesion.paciente.id %}"
+                       style="text-decoration:none;color:#0f4c81;">
 
-                    
-<div class="linea">
-    <span>Inicio</span>
-    <strong>{{ sesion.planilla.hora_inicio|default:"-" }}</strong>
-</div>
+                        {{ sesion.paciente }}
 
-<div class="linea">
-    <span>Peso pre</span>
-    <strong>{{ sesion.peso_pre|default:"-" }}</strong>
-</div>
+                    </a>
 
-<div class="linea">
-    <span>Peso seco</span>
-    <strong>{{ sesion.planilla.peso_seco|default:"-" }}</strong>
-</div>
+                </h3>
 
-<div class="linea">
-    <span>UF prescripta</span>
-    <strong>{{ sesion.planilla.uf_prescripta|default:"-" }}</strong>
-</div>
-
-<div class="linea">
-    <span>Temperatura</span>
-    <strong>{{ sesion.planilla.temperatura_inicial|default:"-" }}</strong>
-</div>
-
-<div class="linea">
-    <span>FC inicial</span>
-    <strong>{{ sesion.planilla.frecuencia_cardiaca_inicial|default:"-" }}</strong>
-</div>
-
-<div class="linea">
-    <span>TA inicial</span>
-    <strong>{{ sesion.ta_inicial|default:"-" }}</strong>
-</div>
-
-<div class="linea">
-    <span>Heparina</span>
-    <strong>{{ sesion.planilla.heparina_inicial|default:"-" }}</strong>
-</div>
-
-
-
-
-
-
-
-
-                    <div class="acciones">
-                        <a class="btn" href="{% url 'editar_signos' sesion.id %}">
-                            Cargar datos
-                        </a>
-
-                        <a class="btn btn-danger" href="{% url 'finalizar_sesion' sesion.id %}">
-                            Finalizar
-                        </a>
-                    </div>
+                <div class="linea">
+                    <span>Puesto</span>
+                    <strong>{{ sesion.puesto.numero|default:"-" }}</strong>
                 </div>
+
+                <div class="linea">
+                    <span>Médico</span>
+
+                    <strong>
+
+                        {% if sesion.medico_asignado %}
+
+                            {% if sesion.medico_asignado.get_full_name %}
+                                {{ sesion.medico_asignado.get_full_name }}
+                            {% else %}
+                                {{ sesion.medico_asignado.username }}
+                            {% endif %}
+
+                        {% else %}
+                            Sin asignar
+                        {% endif %}
+
+                    </strong>
+                </div>
+
+                <div class="linea">
+                    <span>Enfermero</span>
+
+                    <strong>
+
+                        {% if sesion.enfermero_asignado %}
+
+                            {% if sesion.enfermero_asignado.get_full_name %}
+                                {{ sesion.enfermero_asignado.get_full_name }}
+                            {% else %}
+                                {{ sesion.enfermero_asignado.username }}
+                            {% endif %}
+
+                        {% else %}
+                            Sin asignar
+                        {% endif %}
+
+                    </strong>
+                </div>
+
+                <div class="linea">
+                    <span>Inicio</span>
+                    <strong>{{ sesion.planilla.hora_inicio|default:"-" }}</strong>
+                </div>
+
+                <div class="linea">
+                    <span>Peso pre</span>
+                    <strong>{{ sesion.peso_pre|default:"-" }}</strong>
+                </div>
+
+                <div class="linea">
+                    <span>Peso seco</span>
+                    <strong>{{ sesion.planilla.peso_seco|default:"-" }}</strong>
+                </div>
+
+                <div class="linea">
+                    <span>UF prescripta</span>
+                    <strong>{{ sesion.planilla.uf_prescripta|default:"-" }}</strong>
+                </div>
+
+                <div class="linea">
+                    <span>Temperatura</span>
+                    <strong>{{ sesion.planilla.temperatura_inicial|default:"-" }}</strong>
+                </div>
+
+                <div class="linea">
+                    <span>FC inicial</span>
+                    <strong>{{ sesion.planilla.frecuencia_cardiaca_inicial|default:"-" }}</strong>
+                </div>
+
+                <div class="linea">
+                    <span>TA inicial</span>
+                    <strong>{{ sesion.ta_inicial|default:"-" }}</strong>
+                </div>
+
+                <div class="linea">
+                    <span>Heparina</span>
+                    <strong>{{ sesion.planilla.heparina_inicial|default:"-" }}</strong>
+                </div>
+
+                <div class="acciones">
+
+                    <a class="btn"
+                       href="{% url 'editar_signos' sesion.id %}">
+
+                        Cargar datos
+
+                    </a>
+
+                    <a class="btn btn-danger"
+                       href="{% url 'finalizar_sesion' sesion.id %}">
+
+                        Finalizar
+
+                    </a>
+
+                </div>
+
+            </div>
+
             {% empty %}
-                <div class="vacio">
-                    No hay pacientes en sesión.
-                </div>
+
+            <div class="vacio">
+                No hay pacientes en sesión.
+            </div>
+
             {% endfor %}
+
         </div>
+
     </div>
 
     <div class="seccion">
+
         <h2>
             Pacientes finalizados
-            <span class="contador">{{ sesiones_finalizadas|length }}</span>
+            <span class="contador">
+                {{ sesiones_finalizadas|length }}
+            </span>
         </h2>
 
         <div class="fichas">
+
             {% for sesion in sesiones_finalizadas %}
-                <div class="card finalizada">
-                    <h3>
-                        <a href="{% url 'historial_paciente' sesion.paciente.id %}" style="text-decoration:none;color:#0f4c81;">
-                            {{ sesion.paciente }}
-                        </a>
-                    </h3>
 
-                    <div class="linea">
-                        <span>Puesto</span>
-                        <strong>{{ sesion.puesto.numero|default:"-" }}</strong>
-                    </div>
+            <div class="card finalizada">
 
-                    <div class="linea">
-                        <span>Médico</span>
-                        <strong>{{ sesion.medico_asignado|default:"Sin asignar" }}</strong>
-                    </div>
+                <h3>
 
-                    <div class="linea">
-                        <span>Enfermero</span>
-                        <strong>{{ sesion.enfermero_asignado|default:"Sin asignar" }}</strong>
-                    </div>
+                    <a href="{% url 'historial_paciente' sesion.paciente.id %}"
+                       style="text-decoration:none;color:#0f4c81;">
 
-                    <div class="linea">
-                        <span>Hora inicio</span>
-                        <strong>{{ sesion.planilla.hora_inicio|default:"-" }}</strong>
-                    </div>
+                        {{ sesion.paciente }}
 
-                    <div class="linea">
-                        <span>Hora fin</span>
-                        <strong>{{ sesion.planilla.hora_fin|default:"-" }}</strong>
-                    </div>
+                    </a>
 
-                    <div class="acciones">
-                        <a class="btn btn-gray" href="{% url 'editar_signos' sesion.id %}">
-                            Ver planilla
-                        </a>
-                    </div>
+                </h3>
+
+                <div class="linea">
+                    <span>Puesto</span>
+                    <strong>{{ sesion.puesto.numero|default:"-" }}</strong>
                 </div>
+
+                <div class="linea">
+                    <span>Médico</span>
+
+                    <strong>
+
+                        {% if sesion.medico_asignado %}
+
+                            {% if sesion.medico_asignado.get_full_name %}
+                                {{ sesion.medico_asignado.get_full_name }}
+                            {% else %}
+                                {{ sesion.medico_asignado.username }}
+                            {% endif %}
+
+                        {% else %}
+                            Sin asignar
+                        {% endif %}
+
+                    </strong>
+                </div>
+
+                <div class="linea">
+                    <span>Enfermero</span>
+
+                    <strong>
+
+                        {% if sesion.enfermero_asignado %}
+
+                            {% if sesion.enfermero_asignado.get_full_name %}
+                                {{ sesion.enfermero_asignado.get_full_name }}
+                            {% else %}
+                                {{ sesion.enfermero_asignado.username }}
+                            {% endif %}
+
+                        {% else %}
+                            Sin asignar
+                        {% endif %}
+
+                    </strong>
+                </div>
+
+                <div class="linea">
+                    <span>Hora inicio</span>
+                    <strong>{{ sesion.planilla.hora_inicio|default:"-" }}</strong>
+                </div>
+
+                <div class="linea">
+                    <span>Hora fin</span>
+                    <strong>{{ sesion.planilla.hora_fin|default:"-" }}</strong>
+                </div>
+
+                <div class="acciones">
+
+                    <a class="btn btn-gray"
+                       href="{% url 'editar_signos' sesion.id %}">
+
+                        Ver planilla
+
+                    </a>
+
+                </div>
+
+            </div>
+
             {% empty %}
-                <div class="vacio">
-                    No hay pacientes finalizados.
-                </div>
+
+            <div class="vacio">
+                No hay pacientes finalizados.
+            </div>
+
             {% endfor %}
+
         </div>
+
     </div>
 
 </div>

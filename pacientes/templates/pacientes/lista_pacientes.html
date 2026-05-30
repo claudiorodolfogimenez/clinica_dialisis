@@ -245,61 +245,9 @@
 
     <div class="panel">
 
-        <div class="barra-superior">
+        
 
-            <div class="titulo-periodo">
-
-                📅
-
-                {% if mes == 1 %}Enero{% endif %}
-                {% if mes == 2 %}Febrero{% endif %}
-                {% if mes == 3 %}Marzo{% endif %}
-                {% if mes == 4 %}Abril{% endif %}
-                {% if mes == 5 %}Mayo{% endif %}
-                {% if mes == 6 %}Junio{% endif %}
-                {% if mes == 7 %}Julio{% endif %}
-                {% if mes == 8 %}Agosto{% endif %}
-                {% if mes == 9 %}Septiembre{% endif %}
-                {% if mes == 10 %}Octubre{% endif %}
-                {% if mes == 11 %}Noviembre{% endif %}
-                {% if mes == 12 %}Diciembre{% endif %}
-
-                {{ anio }}
-
-            </div>
-
-            <form method="get">
-
-                <select
-                    name="mes"
-                    class="selector-mes"
-                    onchange="this.form.submit()"
-                >
-
-                    {% for numero, nombre in meses %}
-
-                        <option
-                            value="{{ numero }}"
-                            {% if numero == mes %}
-                                selected
-                            {% endif %}
-                        >
-
-                            {{ nombre }}
-
-                        </option>
-
-                    {% endfor %}
-
-                </select>
-
-                <input type="hidden" name="anio" value="{{ anio }}">
-
-            </form>
-
-        </div>
-
-        <h2>Pacientes ordenados por última atención</h2>
+       
 
         <input
             type="text"
@@ -317,7 +265,7 @@
 
                     <tr>
 
-                        <th>Última atención</th>
+                       
                         <th>Paciente</th>
                         <th>DNI</th>
                         <th>Obra social</th>
@@ -334,26 +282,20 @@
 
                     {% for p in pacientes %}
 
-                    <tr>
+                 <tr>
 
-                        <td>
-                            {{ p.fecha_ultima_atencion|date:"d/m/Y" }}
-                        </td>
+                    <td>
 
-                        <td>
+                     <a
+                     href="{% url 'editar_paciente' p.id %}"
+                    class="paciente-link"
+                         >
+                         {{ p.apellido }}, {{ p.nombre }}
+                     </a>
 
-                            <a
-                                href="{% url 'editar_paciente' p.id %}"
-                                class="paciente-link"
-                            >
+                </td>
 
-                                {{ p.apellido }}, {{ p.nombre }}
-
-                            </a>
-
-                        </td>
-
-                        <td>{{ p.dni }}</td>
+                 <td>{{ p.dni }}</td>
 
                         <td>{{ p.obra_social|default:"-" }}</td>
 

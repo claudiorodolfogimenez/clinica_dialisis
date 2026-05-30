@@ -33,8 +33,10 @@ def usuario_en_grupo(user, nombre_grupo):
 
 def nombre_usuario(user):
     nombre = user.get_full_name()
+
     if nombre:
         return nombre
+
     return user.username
 
 
@@ -50,10 +52,16 @@ def contexto_roles(request):
 
 @login_required
 def inicio(request):
+
     hoy = date.today()
 
-    pacientes_activos = Paciente.objects.filter(activo=True).count()
-    sesiones_hoy = SesionDialisis.objects.filter(fecha=hoy).count()
+    pacientes_activos = Paciente.objects.filter(
+        activo=True
+    ).count()
+
+    sesiones_hoy = SesionDialisis.objects.filter(
+        fecha=hoy
+    ).count()
 
     sesiones_activas = SesionDialisis.objects.filter(
         fecha=hoy,
@@ -70,6 +78,7 @@ def inicio(request):
     insumos_alerta = []
 
     if Insumo:
+
         insumos_alerta = Insumo.objects.filter(
             activo=True,
             stock_actual__lte=20
@@ -78,11 +87,13 @@ def inicio(request):
         stock_alerta = insumos_alerta.count()
 
     ultimas_sesiones = list(
-        SesionDialisis.objects.select_related("paciente", "puesto")
+        SesionDialisis.objects
+        .select_related("paciente", "puesto")
         .order_by("-fecha", "-id")[:8]
     )
 
     for s in ultimas_sesiones:
+
         try:
             s.planilla = s.planillahemodialisis
         except Exception:
@@ -101,7 +112,12 @@ def inicio(request):
     }
 
     context.update(contexto_roles(request))
-    return render(request, "dashboard/inicio.html", context)
+
+    return render(
+        request,
+        "dashboard/inicio.html",
+        context
+    )
 
 
 @login_required
@@ -111,107 +127,109 @@ def sala(request):
 
 @login_required
 def turno(request):
+
+    es_medico = usuario_en_grupo(request.user, "Medicos")
+
+    hoy = date.today()
+
     turno_actual = request.GET.get("turno", "manana")
 
-    fecha_get = request.GET.get("fecha")
+    pacientes = Paciente.objects.filter(
+        activo=True
+    ).order_by("apellido", "nombre")
 
-    if fecha_get:
+    sesiones_activas = (
+        SesionDialisis.objects
+        .filter(
+            fecha=hoy,
+            finalizada=False
+        )
+        .select_related(
+            "paciente",
+            "puesto",
+            "medico_asignado",
+            "enfermero_asignado"
+        )
+    )
+
+    for s in sesiones_activas:
+
         try:
-            hoy = datetime.strptime(fecha_get, "%Y-%m-%d").date()
-        except ValueError:
-            hoy = date.today()
-    else:
-        hoy = date.today()
+            s.planilla = s.planillahemodialisis
+        except Exception:
+            s.planilla = None
+
+    sesiones_finalizadas = (
+        SesionDialisis.objects
+        .filter(
+            fecha=hoy,
+            finalizada=True
+        )
+        .select_related(
+            "paciente",
+            "puesto",
+            "medico_asignado",
+            "enfermero_asignado"
+        )
+    )
+
+    for s in sesiones_finalizadas:
+
+        try:
+            s.planilla = s.planillahemodialisis
+        except Exception:
+            s.planilla = None
+
+    puestos = Puesto.objects.all().order_by("numero")
 
     medicos = User.objects.filter(
-        username__icontains="medico"
-    ).order_by("first_name", "last_name", "username")
+        groups__name="Medicos"
+    ).order_by("first_name")
+
+    enfermeros = User.objects.filter(
+        groups__name="Enfermeros"
+    ).order_by("first_name")
 
     if request.method == "POST":
+
+        if es_medico:
+            return redirect("turno")
+
         paciente_id = request.POST.get("paciente")
         puesto_id = request.POST.get("puesto")
         medico_id = request.POST.get("medico")
 
-        
+        paciente = get_object_or_404(
+            Paciente,
+            id=paciente_id
+        )
 
-        medico = ""
+        puesto = get_object_or_404(
+            Puesto,
+            id=puesto_id
+        )
+
+        medico = None
+
         if medico_id:
-            medico_user = User.objects.filter(id=medico_id).first()
-            if medico_user:
-                medico = nombre_usuario(medico_user)
-                
-
-        enfermero = nombre_usuario(request.user)
-
-        if paciente_id:
-            puesto = None
-
-            if puesto_id:
-                puesto = Puesto.objects.filter(id=puesto_id).first()
-
-            sesion_existente = SesionDialisis.objects.filter(
-                paciente_id=paciente_id,
-                fecha=hoy,
-                turno=turno_actual,
-                finalizada=False,
+            medico = User.objects.filter(
+                id=medico_id
             ).first()
 
-            if sesion_existente:
-                sesion_existente.estado = "activa"
-                sesion_existente.finalizada = False
-                sesion_existente.puesto = puesto
-                sesion_existente.medico_asignado = medico
-                sesion_existente.enfermero_asignado = enfermero
-                sesion_existente.save()
-            else:
-                SesionDialisis.objects.create(
-                    paciente_id=paciente_id,
-                    puesto=puesto,
-                    fecha=hoy,
-                    turno=turno_actual,
-                    estado="activa",
-                    finalizada=False,
-                    medico_asignado=medico,
-                    enfermero_asignado=enfermero,
-                )
+        enfermero = request.user
 
-        return redirect(f"/turno/?turno={turno_actual}&fecha={hoy}")
-
-    pacientes = Paciente.objects.filter(activo=True).order_by("apellido", "nombre")
-    puestos = Puesto.objects.filter(activo=True).order_by("numero")
-
-    sesiones = list(
-        SesionDialisis.objects.filter(
+        SesionDialisis.objects.create(
+            paciente=paciente,
+            puesto=puesto,
+            medico_asignado=medico,
+            enfermero_asignado=enfermero,
             fecha=hoy,
             turno=turno_actual,
-        ).select_related("paciente", "puesto")
-    )
+            estado="pendiente",
+            finalizada=False,
+        )
 
-    for s in sesiones:
-        try:
-            s.planilla = s.planillahemodialisis
-
-            if s.planilla.hora_inicio and s.planilla.hora_fin:
-                h_inicio = datetime.strptime(s.planilla.hora_inicio, "%H:%M")
-                h_fin = datetime.strptime(s.planilla.hora_fin, "%H:%M")
-                diferencia = h_fin - h_inicio
-                horas = diferencia.seconds // 3600
-                minutos = (diferencia.seconds % 3600) // 60
-                s.duracion = f"{horas}h {minutos}m"
-            else:
-                s.duracion = None
-
-        except Exception:
-            s.planilla = None
-            s.duracion = None
-
-    sesiones_activas = [
-        s for s in sesiones if s.estado == "activa" and not s.finalizada
-    ]
-
-    sesiones_finalizadas = [
-        s for s in sesiones if s.finalizada
-    ]
+        return redirect("turno")
 
     context = {
         "hoy": hoy,
@@ -219,25 +237,33 @@ def turno(request):
         "pacientes": pacientes,
         "puestos": puestos,
         "medicos": medicos,
+        "enfermeros": enfermeros,
         "sesiones_activas": sesiones_activas,
         "sesiones_finalizadas": sesiones_finalizadas,
         "sesiones_pendientes": [],
+        "es_medico": es_medico,
     }
 
     context.update(contexto_roles(request))
 
-
-
-
-
-    return render(request, "dashboard/turno.html", context)
+    return render(
+        request,
+        "dashboard/turno.html",
+        context
+    )
 
 
 @login_required
 def iniciar_sesion(request, sesion_id):
-    sesion = get_object_or_404(SesionDialisis, id=sesion_id)
+
+    sesion = get_object_or_404(
+        SesionDialisis,
+        id=sesion_id
+    )
+
     sesion.estado = "activa"
     sesion.finalizada = False
+
     sesion.save()
 
     return redirect(f"/signos/{sesion.id}/")
@@ -245,18 +271,33 @@ def iniciar_sesion(request, sesion_id):
 
 @login_required
 def finalizar_sesion(request, sesion_id):
-    sesion = get_object_or_404(SesionDialisis, id=sesion_id)
+
+    sesion = get_object_or_404(
+        SesionDialisis,
+        id=sesion_id
+    )
+
     sesion.estado = "finalizada"
     sesion.finalizada = True
+
     sesion.save()
 
-    return redirect(f"/turno/?turno={sesion.turno}&fecha={sesion.fecha}")
+    return redirect(
+        f"/turno/?turno={sesion.turno}&fecha={sesion.fecha}"
+    )
 
 
 @login_required
 def editar_signos(request, sesion_id):
-    sesion = get_object_or_404(SesionDialisis, id=sesion_id)
-    planilla, _ = PlanillaHemodialisis.objects.get_or_create(sesion=sesion)
+
+    sesion = get_object_or_404(
+        SesionDialisis,
+        id=sesion_id
+    )
+
+    planilla, _ = PlanillaHemodialisis.objects.get_or_create(
+        sesion=sesion
+    )
 
     ultima_sesion_anterior = (
         SesionDialisis.objects
@@ -272,89 +313,195 @@ def editar_signos(request, sesion_id):
     ultimo_peso = None
 
     if ultima_sesion_anterior:
+
         try:
             ultima_planilla = ultima_sesion_anterior.planillahemodialisis
             ultimo_peso = ultima_planilla.peso_post
+
         except Exception:
             ultimo_peso = ultima_sesion_anterior.peso_post
 
     controles = []
 
     for i in range(1, 5):
+
         control, _ = ControlHorarioHemodialisis.objects.get_or_create(
             planilla=planilla,
             hora=i
         )
+
         controles.append(control)
 
     if request.method == "POST":
-        peso_pre = decimal_o_none(request.POST.get("peso_pre"))
+
+        peso_pre = decimal_o_none(
+            request.POST.get("peso_pre")
+        )
+
+        peso_post = decimal_o_none(
+            request.POST.get("peso_post")
+        )
+
+        peso_seco = decimal_o_none(
+            request.POST.get("peso_seco")
+        )
+
+        hora_inicio = request.POST.get(
+            "hora_inicio",
+            ""
+        ).strip()
+
+        hora_fin = request.POST.get(
+            "hora_fin",
+            ""
+        ).strip()
+
+        # ===== SESION =====
+
+        sesion.peso_pre = peso_pre
+        sesion.peso_post = peso_post
+
+        sesion.ta_inicial = request.POST.get(
+            "ta_inicial"
+        ) or ""
+
+        sesion.ta_final = request.POST.get(
+             "ta_egreso"
+        ) or ""
+
+        sesion.save()
+
+        # ===== PLANILLA =====
 
         planilla.peso_pre = peso_pre
-        sesion.peso_pre = peso_pre
+        planilla.peso_post = peso_post
+        planilla.peso_seco = peso_seco
 
-        planilla.uf_prescripta = request.POST.get("uf_prescripta", "")
-        planilla.temperatura_inicial = request.POST.get("temperatura_inicial", "")
-        planilla.frecuencia_cardiaca_inicial = request.POST.get("frecuencia_cardiaca_inicial", "")
-        planilla.ta_inicial = request.POST.get("ta_inicial", "")
-        planilla.heparina_inicial = request.POST.get("heparina_inicial", "")
-        planilla.hora_inicio = request.POST.get("hora_inicio", "")
+        planilla.uf_prescripta = request.POST.get(
+            "uf_prescripta"
+        ) or None
 
-        sesion.ta_inicial = request.POST.get("ta_inicial", "")
+        planilla.temperatura_inicial = request.POST.get(
+            "temperatura_inicial"
+        ) or None
 
-        planilla.acceso_vascular = request.POST.get("acceso_vascular", "")
-        planilla.dializador = request.POST.get("dializador", "")
-        planilla.concentrado = request.POST.get("concentrado", "")
-        planilla.agujas = request.POST.get("agujas", "")
-        planilla.talla = request.POST.get("talla", "")
-        planilla.peso_seco = decimal_o_none(request.POST.get("peso_seco"))
-        planilla.td = request.POST.get("td", "")
-        planilla.qb = request.POST.get("qb", "")
-        planilla.qd = request.POST.get("qd", "")
-        planilla.na = request.POST.get("na", "")
+        planilla.frecuencia_cardiaca_inicial = request.POST.get(
+            "frecuencia_cardiaca_inicial"
+        ) or None
+
+        planilla.ta_inicial = request.POST.get(
+            "ta_inicial"
+        ) or None
+
+        planilla.heparina_inicial = request.POST.get(
+            "heparina_inicial"
+        ) or None
+
+        planilla.hora_inicio = hora_inicio if hora_inicio else None
+
+        planilla.acceso_vascular = request.POST.get(
+            "acceso_vascular"
+        ) or None
+
+        planilla.dializador = request.POST.get(
+            "dializador"
+        ) or None
+
+        planilla.concentrado = request.POST.get(
+            "concentrado"
+        ) or None
+
+        planilla.agujas = request.POST.get(
+            "agujas"
+        ) or None
+
+        planilla.talla = request.POST.get(
+            "talla"
+        ) or None
+
+        planilla.td = request.POST.get("td") or None
+        planilla.qb = request.POST.get("qb") or None
+        planilla.qd = request.POST.get("qd") or None
+        planilla.na = request.POST.get("na") or None
+
+        # ===== CONTROLES =====
 
         for i in range(1, 5):
+
             control, _ = ControlHorarioHemodialisis.objects.get_or_create(
                 planilla=planilla,
                 hora=i
             )
 
-            control.ta = request.POST.get(f"control_{i}_ta", "")
-            control.ultrafiltracion = request.POST.get(f"control_{i}_uf", "")
-            control.presion_venosa = request.POST.get(f"control_{i}_pv", "")
-            control.qb = request.POST.get(f"control_{i}_qb", "")
-            control.heparina_hora = request.POST.get(f"control_{i}_heparina", "")
-            control.observacion = request.POST.get(f"control_{i}_observacion", "")
+            control.ta = request.POST.get(
+                f"control_{i}_ta"
+            ) or None
+
+            control.ultrafiltracion = request.POST.get(
+                f"control_{i}_uf"
+            ) or None
+
+            control.presion_venosa = request.POST.get(
+                f"control_{i}_pv"
+            ) or None
+
+            control.qb = request.POST.get(
+                f"control_{i}_qb"
+            ) or None
+
+            control.heparina_hora = request.POST.get(
+                f"control_{i}_heparina"
+            ) or None
+
+            control.observacion = request.POST.get(
+                f"control_{i}_observacion"
+            ) or None
+
             control.save()
 
-        peso_post = decimal_o_none(request.POST.get("peso_post"))
+        # ===== FINAL =====
 
-        planilla.peso_post = peso_post
-        sesion.peso_post = peso_post
+        planilla.temperatura_final = request.POST.get(
+            "temperatura_final"
+        ) or None
 
-        planilla.temperatura_final = request.POST.get("temperatura_final", "")
-        planilla.ta_egreso = request.POST.get("ta_egreso", "")
-        planilla.frecuencia_cardiaca_final = request.POST.get("frecuencia_cardiaca_final", "")
-        planilla.uf_final = request.POST.get("uf_final", "")
-        planilla.hora_fin = request.POST.get("hora_fin", "")
-        planilla.atb = request.POST.get("atb", "")
+        planilla.ta_egreso = request.POST.get(
+            "ta_egreso"
+        ) or None
 
-        if usuario_en_grupo(request.user, "Enfermeros") or request.user.is_superuser:
-            planilla.observaciones_enfermeria = request.POST.get(
-                "observaciones_enfermeria", ""
-            )
+        planilla.frecuencia_cardiaca_final = request.POST.get(
+            "frecuencia_cardiaca_final"
+        ) or None
 
-        if usuario_en_grupo(request.user, "Medicos") or request.user.is_superuser:
+        planilla.uf_final = request.POST.get(
+            "uf_final"
+        ) or None
+
+        planilla.hora_fin = hora_fin if hora_fin else None
+
+        planilla.atb = request.POST.get(
+            "atb"
+        ) or None
+
+        planilla.observaciones_enfermeria = request.POST.get(
+            "observaciones_enfermeria"
+        ) or None
+
+        if (
+            usuario_en_grupo(request.user, "Medicos")
+            or request.user.is_superuser
+        ):
+
             planilla.observaciones_medicas = request.POST.get(
-                "observaciones_medicas", ""
-            )
+                "observaciones_medicas"
+            ) or None
 
-        sesion.ta_final = request.POST.get("ta_egreso", "")
-
-        sesion.save()
         planilla.save()
 
-        return redirect("editar_signos", sesion_id=sesion.id)
+        return redirect(
+            "editar_signos",
+            sesion_id=sesion.id
+        )
 
     context = {
         "sesion": sesion,
@@ -364,17 +511,28 @@ def editar_signos(request, sesion_id):
     }
 
     context.update(contexto_roles(request))
-    return render(request, "dashboard/editar_signos.html", context)
+
+    return render(
+        request,
+        "dashboard/editar_signos.html",
+        context
+    )
 
 
 @login_required
 def crear_paciente_basico(request):
+
+    if usuario_en_grupo(request.user, "Medicos"):
+        return redirect("/turno/")
+
     if request.method == "POST":
+
         apellido = request.POST.get("apellido", "")
         nombre = request.POST.get("nombre", "")
         dni = request.POST.get("dni", "")
 
         if apellido and nombre:
+
             Paciente.objects.create(
                 apellido=apellido,
                 nombre=nombre,
@@ -385,13 +543,23 @@ def crear_paciente_basico(request):
         return redirect("/turno/")
 
     context = {}
+
     context.update(contexto_roles(request))
-    return render(request, "dashboard/crear_paciente_basico.html", context)
+
+    return render(
+        request,
+        "dashboard/crear_paciente_basico.html",
+        context
+    )
 
 
 @login_required
 def historial_paciente(request, paciente_id):
-    paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    paciente = get_object_or_404(
+        Paciente,
+        id=paciente_id
+    )
 
     sesiones = SesionDialisis.objects.filter(
         paciente=paciente
@@ -403,12 +571,21 @@ def historial_paciente(request, paciente_id):
     }
 
     context.update(contexto_roles(request))
-    return render(request, "dashboard/historial_paciente.html", context)
+
+    return render(
+        request,
+        "dashboard/historial_paciente.html",
+        context
+    )
 
 
 @login_required
 def historial_mensual(request, paciente_id):
-    paciente = get_object_or_404(Paciente, id=paciente_id)
+
+    paciente = get_object_or_404(
+        Paciente,
+        id=paciente_id
+    )
 
     hoy = date.today()
 
@@ -436,6 +613,7 @@ def historial_mensual(request, paciente_id):
     sesiones_con_planilla = []
 
     for s in sesiones:
+
         try:
             s.planilla = s.planillahemodialisis
         except Exception:
@@ -444,10 +622,12 @@ def historial_mensual(request, paciente_id):
         controles_por_hora = {}
 
         if s.planilla:
+
             for control in s.planilla.controles.all().order_by("hora"):
                 controles_por_hora[control.hora] = control
 
         s.controles_por_hora = controles_por_hora
+
         sesiones_con_planilla.append(s)
 
     meses = [
@@ -480,8 +660,11 @@ def historial_mensual(request, paciente_id):
         "dashboard/historial_mensual.html",
         context
     )
+
+
 @login_required
 def home(request):
+
     if usuario_en_grupo(request.user, "Administracion"):
         return redirect("lista_pacientes")
 

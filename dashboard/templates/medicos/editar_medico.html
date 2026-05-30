@@ -1,0 +1,216 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Evolución médica</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+
+        body{
+            background:#eef2f7;
+            font-family:Arial;
+            margin:0;
+        }
+
+        .topbar{
+            background:#0d4d8b;
+            color:white;
+            padding:25px;
+        }
+
+        .topbar h1{
+            margin:0;
+        }
+
+        .container{
+            width:95%;
+            max-width:1200px;
+            margin:30px auto;
+        }
+
+        .panel{
+            background:white;
+            border-radius:18px;
+            padding:30px;
+            margin-bottom:25px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+            gap:20px;
+        }
+
+        .campo{
+            display:flex;
+            flex-direction:column;
+        }
+
+        .campo label{
+            font-weight:bold;
+            margin-bottom:8px;
+            color:#0d4d8b;
+        }
+
+        .campo input,
+        .campo textarea{
+            padding:12px;
+            border-radius:10px;
+            border:1px solid #cfd7e3;
+            font-size:15px;
+        }
+
+        textarea{
+            min-height:120px;
+            resize:vertical;
+        }
+
+        .btn{
+            background:#0d4d8b;
+            color:white;
+            border:none;
+            padding:14px 22px;
+            border-radius:10px;
+            cursor:pointer;
+            font-size:16px;
+            font-weight:bold;
+        }
+
+        .btn:hover{
+            opacity:0.9;
+        }
+
+        .acciones{
+            display:flex;
+            gap:15px;
+            margin-top:20px;
+        }
+
+        .btn-gray{
+            background:#6c7a92;
+            text-decoration:none;
+            display:inline-flex;
+            align-items:center;
+        }
+
+        .datos-paciente{
+            line-height:1.8;
+            color:#333;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="topbar">
+
+        <h1>🩺 Evolución médica</h1>
+
+    </div>
+
+    <div class="container">
+
+        <div class="panel">
+
+            <h2>
+                {{ paciente.apellido }}, {{ paciente.nombre }}
+            </h2>
+
+            <div class="datos-paciente">
+
+                <strong>DNI:</strong> {{ paciente.dni }}<br>
+
+                <strong>Obra social:</strong> {{ paciente.obra_social }}<br>
+
+                <strong>Médico tratante:</strong> {{ paciente.medico_tratante }}<br>
+
+                <strong>Acceso vascular:</strong> {{ paciente.acceso_vascular }}
+
+            </div>
+
+        </div>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="panel">
+
+                <div class="grid">
+
+                    <div class="campo">
+
+                        <label>Evolución clínica</label>
+
+                        <textarea
+                            name="evolucion_medica"
+                        >{{ sesion.evolucion_medica }}</textarea>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label>Indicaciones médicas</label>
+
+                        <textarea
+                            name="indicaciones_medicas"
+                        >{{ sesion.indicaciones_medicas }}</textarea>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label>Medicación</label>
+
+                        <textarea
+                            name="medicacion"
+                        >{{ sesion.medicacion }}</textarea>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label>Observaciones médicas</label>
+
+                        <textarea
+                            name="observaciones_medicas"
+                        >{{ sesion.observaciones_medicas }}</textarea>
+
+                    </div>
+
+                </div>
+
+                <div class="acciones">
+
+                    <button type="submit" class="btn">
+                        💾 Guardar evolución
+                    </button>
+
+                    <a
+                        href="javascript:history.back()"
+                        class="btn btn-gray"
+                    >
+                        ← Volver
+                    </a>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>
