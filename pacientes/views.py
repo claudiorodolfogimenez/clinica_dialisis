@@ -13,61 +13,24 @@ def usuario_en_grupo(user, nombre_grupo):
 
 @login_required
 def lista_pacientes(request):
-    hoy = date.today()
 
-    try:
-        mes = int(request.GET.get("mes", hoy.month))
-    except ValueError:
-        mes = hoy.month
-
-    try:
-        anio = int(request.GET.get("anio", hoy.year))
-    except ValueError:
-        anio = hoy.year
-
-    sesiones_mes = (
-        SesionDialisis.objects
-        .filter(
-            fecha__month=mes,
-            fecha__year=anio
-        )
-        .select_related("paciente")
-        .order_by("-fecha", "-id")
+    pacientes = (
+        Paciente.objects
+        .all()
+        .order_by("apellido", "nombre")
     )
 
-    pacientes = []
-    vistos = set()
-
-    for sesion in sesiones_mes:
-        if sesion.paciente.id not in vistos:
-            sesion.paciente.fecha_ultima_atencion = sesion.fecha
-            pacientes.append(sesion.paciente)
-            vistos.add(sesion.paciente.id)
-
-    meses = [
-        (1, "Enero"),
-        (2, "Febrero"),
-        (3, "Marzo"),
-        (4, "Abril"),
-        (5, "Mayo"),
-        (6, "Junio"),
-        (7, "Julio"),
-        (8, "Agosto"),
-        (9, "Septiembre"),
-        (10, "Octubre"),
-        (11, "Noviembre"),
-        (12, "Diciembre"),
-    ]
+    print("PACIENTES EN VISTA:", pacientes.count())
 
     return render(
         request,
         "pacientes/lista_pacientes.html",
         {
             "pacientes": pacientes,
-            "mes": mes,
-            "anio": anio,
-            "meses": meses,
-            "es_administracion": usuario_en_grupo(request.user, "Administracion"),
+            "es_administracion": usuario_en_grupo(
+                request.user,
+                "Administracion"
+            ),
             "es_superadmin": request.user.is_superuser,
         }
     )
