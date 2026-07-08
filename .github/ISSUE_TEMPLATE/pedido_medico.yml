@@ -1,0 +1,103 @@
+name: "👨‍⚕️ Pedido Médico"
+description: "Solicitud realizada por un médico para el sistema Salud Renal."
+title: "[MEDICO] "
+labels:
+  - medico
+
+body:
+
+  - type: input
+    id: medico
+    attributes:
+      label: Médico solicitante
+      description: Nombre del médico que realizó el pedido.
+      placeholder: Ej. Dra. María Pérez
+    validations:
+      required: true
+
+  - type: input
+    id: fecha
+    attributes:
+      label: Fecha del pedido
+      placeholder: "08/07/2026"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Módulo afectado
+      options:
+        - Pacientes
+        - Turnos
+        - Historia Clínica
+        - Evolución Médica
+        - Nutrición
+        - Psicología
+        - Dashboard
+        - Monitor de Sala
+        - Reportes
+        - Stock
+        - Administración
+        - Seguridad
+        - Otro
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo de solicitud
+      options:
+        - Nueva funcionalidad
+        - Mejora
+        - Corrección
+    validations:
+      required: true
+
+  - type: dropdown
+    id: prioridad
+    attributes:
+      label: Prioridad
+      options:
+        - Baja
+        - Media
+        - Alta
+        - Urgente
+    validations:
+      required: true
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción del pedido
+      description: Explicar exactamente qué necesita el médico.
+      placeholder: Describir el requerimiento...
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivo
+    attributes:
+      label: Motivo clínico
+      description: ¿Por qué es necesario este cambio?
+      placeholder: Explicar el motivo clínico.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: aceptacion
+    attributes:
+      label: Criterios de aceptación
+      options:
+        - label: El cambio debe guardarse en la base de datos.
+        - label: Debe visualizarse correctamente en pantalla.
+        - label: Debe imprimirse si corresponde.
+        - label: Debe respetar los permisos de usuario.
+        - label: Debe probarse antes de pasar a producción.
+
+  - type: textarea
+    id: observaciones
+    attributes:
+      label: Observaciones adicionales
+      placeholder: Información adicional, capturas, comentarios, etc.
