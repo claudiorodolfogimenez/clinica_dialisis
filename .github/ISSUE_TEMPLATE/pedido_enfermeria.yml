@@ -1,0 +1,118 @@
+name: "👩‍⚕️ Pedido de Enfermería"
+description: "Solicitud realizada por el personal de enfermería."
+title: "[ENFERMERIA] "
+labels:
+  - enfermeria
+
+body:
+
+  - type: input
+    id: solicitante
+    attributes:
+      label: Enfermero/a solicitante
+      placeholder: Ej. Lic. Ana Gómez
+    validations:
+      required: true
+
+  - type: input
+    id: fecha
+    attributes:
+      label: Fecha del pedido
+      placeholder: "08/07/2026"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: turno
+    attributes:
+      label: Turno
+      options:
+        - Mañana
+        - Tarde
+        - Noche
+        - Todos
+    validations:
+      required: true
+
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Pantalla o módulo
+      options:
+        - Turnos
+        - Pacientes
+        - Control Horario
+        - Signos Vitales
+        - Monitor de Sala
+        - Reportes
+        - Stock
+        - Administración
+        - Otro
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo de solicitud
+      options:
+        - Error
+        - Mejora
+        - Nueva funcionalidad
+    validations:
+      required: true
+
+  - type: dropdown
+    id: prioridad
+    attributes:
+      label: Prioridad
+      options:
+        - Baja
+        - Media
+        - Alta
+        - Urgente
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: afecta
+    attributes:
+      label: ¿Qué afecta?
+      options:
+        - label: Peso del paciente
+        - label: Signos Vitales
+        - label: Controles horarios
+        - label: Impresión
+        - label: Administración de pacientes
+        - label: Visualización en pantalla
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción del pedido
+      description: Explicar claramente qué se necesita.
+      placeholder: Describir el requerimiento...
+    validations:
+      required: true
+
+  - type: textarea
+    id: beneficio
+    attributes:
+      label: ¿Qué mejora este cambio?
+      placeholder: Ej. Reduce tiempo de carga, evita errores, facilita el trabajo, etc.
+
+  - type: checkboxes
+    id: pruebas
+    attributes:
+      label: Antes de cerrar el Issue verificar
+      options:
+        - label: Funciona correctamente.
+        - label: Se guarda en la base de datos.
+        - label: Se probó con enfermería.
+        - label: No afecta otras pantallas.
+
+  - type: textarea
+    id: observaciones
+    attributes:
+      label: Observaciones
+      placeholder: Información adicional.
