@@ -1,0 +1,103 @@
+name: "🐞 Reporte de Error"
+description: "Informar un error detectado en el sistema."
+title: "[BUG] "
+labels:
+  - bug
+
+body:
+
+  - type: input
+    id: reportado_por
+    attributes:
+      label: Reportado por
+      placeholder: Ej. Enfermería, Dra. Pérez, Administración
+    validations:
+      required: true
+
+  - type: input
+    id: fecha
+    attributes:
+      label: Fecha
+      placeholder: "08/07/2026"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Módulo
+      options:
+        - Login
+        - Dashboard
+        - Pacientes
+        - Turnos
+        - Historia Clínica
+        - Nutrición
+        - Psicología
+        - Stock
+        - Reportes
+        - Administración
+        - Monitor de Sala
+        - Otro
+    validations:
+      required: true
+
+  - type: dropdown
+    id: gravedad
+    attributes:
+      label: Gravedad
+      options:
+        - Baja
+        - Media
+        - Alta
+        - Crítica
+    validations:
+      required: true
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: ¿Qué ocurrió?
+      placeholder: Describir el error.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproducir
+    attributes:
+      label: Pasos para reproducir
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Resultado esperado
+      placeholder: ¿Qué debería haber ocurrido?
+
+  - type: textarea
+    id: obtenido
+    attributes:
+      label: Resultado obtenido
+      placeholder: ¿Qué ocurrió realmente?
+
+  - type: checkboxes
+    id: impacto
+    attributes:
+      label: Impacto
+      options:
+        - label: Impide trabajar
+        - label: Existe solución temporal
+        - label: Afecta datos
+        - label: Afecta impresión
+        - label: Afecta producción
+
+  - type: textarea
+    id: observaciones
+    attributes:
+      label: Observaciones
+      placeholder: Capturas, mensajes de error, etc.
