@@ -1,0 +1,107 @@
+name: "🏢 Pedido Administrativo"
+description: "Solicitud realizada por el área administrativa."
+title: "[ADMIN] "
+labels:
+  - administracion
+
+body:
+
+  - type: input
+    id: solicitante
+    attributes:
+      label: Solicitado por
+      placeholder: Ej. María López
+    validations:
+      required: true
+
+  - type: input
+    id: fecha
+    attributes:
+      label: Fecha del pedido
+      placeholder: "08/07/2026"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: modulo
+    attributes:
+      label: Módulo afectado
+      options:
+        - Pacientes
+        - Obras Sociales
+        - Usuarios
+        - Administración
+        - Reportes
+        - Impresión
+        - Facturación
+        - Dashboard
+        - Stock
+        - Otro
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo de solicitud
+      options:
+        - Corrección
+        - Mejora
+        - Nueva funcionalidad
+    validations:
+      required: true
+
+  - type: dropdown
+    id: prioridad
+    attributes:
+      label: Prioridad
+      options:
+        - Baja
+        - Media
+        - Alta
+        - Urgente
+    validations:
+      required: true
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción del pedido
+      description: Explicar claramente qué necesita el área administrativa.
+      placeholder: Describa el requerimiento...
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: impacto
+    attributes:
+      label: Impacto
+      options:
+        - label: Afecta la carga de pacientes.
+        - label: Afecta la impresión de planillas.
+        - label: Afecta obras sociales.
+        - label: Afecta reportes.
+        - label: Afecta usuarios/permisos.
+        - label: Afecta facturación.
+
+  - type: textarea
+    id: beneficio
+    attributes:
+      label: Beneficio esperado
+      placeholder: ¿Qué mejora aporta este cambio?
+
+  - type: checkboxes
+    id: validacion
+    attributes:
+      label: Validación antes del cierre
+      options:
+        - label: Probado por Administración.
+        - label: Se imprimió correctamente.
+        - label: Los datos son correctos.
+        - label: No afecta otros módulos.
+
+  - type: textarea
+    id: observaciones
+    attributes:
+      label: Observaciones
+      placeholder: Información adicional.
