@@ -1,0 +1,6 @@
+blank_issues_enabled: true
+
+contact_links:
+  - name: 📚 Documentación
+    url: https://github.com/claudiorodolfogimenez/clinica_dialisis
+    about: Consulte la documentación del proyecto.
